@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>MotoJá</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            marca: {
+              50: '#FFF7ED', 100: '#FFEDD5', 200: '#FED7AA',
+              300: '#FDBA74', 400: '#FB923C', 500: '#F97316',
+              600: '#EA580C', 700: '#C2410C', 800: '#9A3412',
+              900: '#7C2D12', 950: '#431407'
+            },
+            destaque: {
+              50: '#EFF6FF', 100: '#DBEAFE', 200: '#BFDBFE',
+              500: '#3B82F6', 600: '#2563EB', 700: '#1D4ED8',
+              900: '#1E3A8A'
+            },
+            cinza: {
+              25: '#FAFAF9', 50: '#F5F5F4', 100: '#E7E5E4',
+              200: '#D6D3D1', 300: '#A8A29E', 400: '#78716C',
+              500: '#57534E', 600: '#44403C', 700: '#292524',
+              800: '#1C1917', 900: '#0F0E0D'
+            }
+          },
+          fontFamily: {
+            display: ['Lexend', 'sans-serif'],
+            body: ['Nunito', 'sans-serif']
+          },
+          boxShadow: {
+            sm: '0 1px 2px rgba(0,0,0,0.04)',
+            md: '0 4px 12px rgba(0,0,0,0.06)',
+            lg: '0 8px 24px rgba(0,0,0,0.08)',
+            xl: '0 16px 40px rgba(0,0,0,0.10)',
+            glow: '0 0 20px rgba(249,115,22,0.25)'
+          },
+          borderRadius: {
+            '2xl': '1rem',
+            '3xl': '1.25rem'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased; }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #D6D3D1; border-radius: 3px; }
+    *:focus-visible { outline: 2px solid #F97316; outline-offset: 2px; border-radius: 6px; }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    [data-tela]:not(.hidden) { animation: fadeSlideIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) forwards; }
+
+    @keyframes toastIn { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes toastOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(110%); opacity: 0; } }
+    .toast-in { animation: toastIn 0.4s ease-out forwards; }
+    .toast-out { animation: toastOut 0.3s ease-in forwards; }
+
+    @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .pulse-dot { animation: pulseDot 1.5s ease-in-out infinite; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .animate-spin-slow { animation: spin 1.2s linear infinite; }
+
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 9999px; font-size: 0.7rem;
+      font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase;
+    }
+    .card {
+      background: #fff; border-radius: 1rem; padding: 1rem 1.1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #F5F5F4;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:active { transform: scale(0.985); box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 13px 24px; border-radius: 0.75rem; font-weight: 700; font-size: 0.95rem;
+      font-family: 'Nunito', sans-serif; border: none; cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primario { background: #F97316; color: #fff; box-shadow: 0 4px 14px rgba(249,115,22,0.35); }
+    .btn-primario:hover { background: #EA580C; box-shadow: 0 6px 18px rgba(249,115,22,0.45); }
+    .btn-secundario { background: #fff; color: #44403C; border: 1.5px solid #E7E5E4; }
+    .btn-secundario:hover { background: #FAFAF9; border-color: #D6D3D1; }
+    .btn-perigo { background: #EF4444; color: #fff; }
+    .btn-pequeno { padding: 8px 16px; font-size: 0.82rem; border-radius: 0.6rem; }
+    .btn-icone {
+      width: 40px; height: 40px; padding: 0; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: #F5F5F4; border: none; cursor: pointer; transition: background 0.2s ease;
+    }
+    .btn-icone:hover { background: #E7E5E4; }
+    .input-campo {
+      width: 100%; padding: 12px 16px; border-radius: 0.75rem; font-family: 'Nunito', sans-serif;
+      font-size: 0.95rem; border: 1.5px solid #E7E5E4; background: #fff;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .input-campo:focus { outline: none; border-color: #F97316; box-shadow: 0 0 0 3px rgba(249,115,22,0.12); }
+    .secao-titulo {
+      font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 1.1rem;
+      color: #1C1917; margin-bottom: 0.75rem;
+    }
+    .divider { height: 1px; background: #F5F5F4; margin: 1rem 0; }
+
+    #nav-btn[data-nav].ativo { color: #F97316; }
+    #nav-btn[data-nav].ativo .nav-icon { color: #F97316; }
+    #nav-btn[data-nav].ativo .nav-label { color: #F97316; font-weight: 700; }
+    #nav-btn[data-nav] { color: #A8A29E; transition: color 0.2s ease; }
+
+    #toast-container { position: fixed; top: 52px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; width: 92%; max-width: 390px; }
+    #modal-overlay {
+      position: fixed; inset: 0; z-index: 8888; background: rgba(0,0,0,0.5);
+      display: flex; align-items: flex-end; justify-content: center; padding: 0;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+    }
+    #modal-overlay.aberto { opacity: 1; pointer-events: auto; }
+    #modal-card {
+      background: #fff; border-radius: 1.5rem 1.5rem 0 0; width: 100%; max-width: 430px;
+      max-height: 80vh; overflow-y: auto; transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    #modal-overlay.aberto #modal-card { transform: translateY(0); }
+    @media (min-width: 640px) {
+      #modal-overlay { align-items: center; padding: 20px; }
+      #modal-card { border-radius: 1.5rem; max-height: 75vh; }
+    }
+  </style>
+</head>
+<body class="bg-cinza-900 font-body text-cinza-800 antialiased">
+
+  <!-- Toast Container -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Modal -->
+  <div id="modal-overlay" onclick="if(event.target===this)fecharModal()">
+    <div id="modal-card">
+      <div class="sticky top-0 bg-white/90 backdrop-blur-sm z-10 flex items-center justify-between p-5 pb-3 border-b border-cinza-100">
+        <h3 id="modal-titulo" class="font-display font-600 text-base text-cinza-900">Modal</h3>
+        <button onclick="fecharModal()" class="btn-icone w-8 h-8" aria-label="Fechar">
+          <svg class="w-4 h-4 text-cinza-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="modal-conteudo" class="p-5"></div>
+    </div>
+  </div>
+
+  <!-- App Frame (Desktop) -->
+  <div id="app-frame" class="hidden sm:flex items-center justify-center min-h-screen p-4">
+    <div class="relative w-full max-w-[390px] bg-cinza-900 rounded-[2.5rem] shadow-2xl overflow-hidden border-[6px] border-cinza-800">
+      <!-- Status Bar -->
+      <div class="flex items-center justify-between px-7 py-2 bg-cinza-900 select-none">
+        <span id="hora-display" class="text-white text-xs font-semibold tracking-wide font-display"></span>
+        <div class="flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-8-8l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 4.93 8.87 4.93 1 9z"/></svg>
+          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+        </div>
+      </div>
+      <!-- App -->
+      <div id="app" class="bg-cinza-25 h-[780px] flex flex-col overflow-hidden"></div>
+    </div>
+  </div>
+
+  <!-- App (Mobile) -->
+  <div id="app-mobile" class="sm:hidden flex flex-col h-screen w-screen overflow-hidden">
+    <div id="app-m" class="bg-cinza-25 flex-1 flex flex-col overflow-hidden min-h-0"></div>
+  </div>
+
+  <script>
+    (function () {
+      var APP_ID = 'app';
+      var isMobile = window.innerWidth < 640;
+      if (isMobile) APP_ID = 'app-m';
+      var appEl = document.getElementById(APP_ID);
+
+      function statusBar() {
+        return '<div class="flex items-center justify-between px-6 py-2 bg-cinza-25 select-none flex-shrink-0">' +
+          '<span class="text-cinza-800 text-xs font-bold font-display">' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) + '</span>' +
+          '<div class="flex items-center gap-1"><svg class="w-4 h-4 text-cinza-800" fill="currentColor" viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-8-8l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 4.93 8.87 4.93 1 9z"/></svg><svg class="w-4 h-4 text-cinza-800" fill="currentColor" viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg></div></div>';
+      }
+
+      function logo() {
+        return '<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="28" height="28" rx="7" fill="#F97316"/><path d="M14 6L8 14h3v6l6-8h-3L14 6z" fill="#fff"/></svg>';
+      }
+
+      function navBtn(id, iconSvg, label) {
+        return '<button id="nav-btn" data-nav="' + id + '" onclick="mostrarTela(\'' + id + '\')" class="flex flex-col items-center justify-center gap-0.5 py-1.5 px-2 flex-1 min-w-0 transition-colors duration-200">' +
+          iconSvg + '<span class="nav-label text-[0.6rem] sm:text-[0.65rem] font-semibold truncate">' + label + '</span></button>';
+      }
+
+      function motoIcon(cor) {
+        return '<svg class="w-5 h-5" fill="none" stroke="' + cor + '" stroke-width="2" viewBox="0 0 24 24"><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><path d="M6 15l4-6h4l2 3h3"/></svg>';
+      }
+      function docIcon(cor) {
+        return '<svg class="w-5 h-5" fill="none" stroke="' + cor + '" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v9.75c0 .621.504 1.125 1.125 1.125h2.25m2.25 0h7.5c.621 0 1.125-.504 1.125-1.125v-4.5c0-.621-.504-1.125-1.125-1.125h-2.25"/></svg>';
+      }
+      function mapIcon(cor) {
+        return '<svg class="w-5 h-5" fill="none" stroke="' + cor + '" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>';
+      }
+      function userIcon(cor) {
+        return '<svg class="w-5 h-5" fill="none" stroke="' + cor + '" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.25h15c.621 0 1.125-.504 1.125-1.125V19.5a1.125 1.125 0 00-1.125-1.125H4.5a1.125 1.125 0 00-1.125 1.125v.625c0 .621.504 1.125 1.125 1.125z"/></svg>';
+      }
+      function chatIcon(cor) {
+        return '<svg class="w-5 h-5" fill="none" stroke="' + cor + '" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-3.924 8.25-8.75 8.25H7.25C3.375 20.25 0 16.875 0 13.5S3.375 6.75 7.25 6.75h.375c.621 0 1.125.504 1.125 1.125v.375c0 .621.504 1.125 1.125 1.125h3.375c.621 0 1.125-.504 1.125-1.125v-.375c0-.621-.504-1.125-1.125-1.125h.375C18.625 6.75 22 10.125 22 13.5z"/></svg>';
+      }
+
+      var navItems = [
+        { id: 'home-do-motoboy', icon: motoIcon('currentColor'), label: 'Início' },
+        { id: 'detalhe-da-corrida', icon: docIcon('currentColor'), label: 'Corridas' },
+        { id: 'corrida-em-andamento', icon: mapIcon('currentColor'), label: 'Rota' },
+        { id: 'meus-ganhos', icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>', label: 'Ganhos' },
+        { id: 'home-do-estabelecimento', icon: userIcon('currentColor'), label: 'Estab.' },
+        { id: 'nova-corrida', icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>', label: 'Nova' },
+        { id: 'mapa-e-acompanhamento', icon: mapIcon('currentColor'), label: 'Mapa' },
+        { id: 'painel-financeiro', icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 013 16.125v-2.25zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125v-8.25zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>', label: 'Financeiro' },
+        { id: 'painel-admin', icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.06.302.034.63-.298 1.256l-.827.774c-.504.505-.365 1.303.178 1.693l1.34.856c.482.385.636.963.635 1.578v.003c-.001.615-.153 1.193-.635 1.578l-1.34.856c-.543.39-.682 1.188-.178 1.693l.827.774c.332.626.358.954.298 1.256l-.149.894c-.09.542-.56.94-1.11.94h-1.093c-.55 0-1.02-.398-1.11-.94l-.149-.894c-.06-.302-.034-.63.298-1.256l.827-.774c.504-.505.365-1.303-.178-1.693l-1.34-.856c-.482-.385-.636-.963-.635-1.578v-.003c.001-.615.153-1.193.635-1.578l1.34-.856c.543-.39.682-1.188.178-1.693l-.827-.774c-.332-.626-.358-.954-.298-1.256l.149-.894z"/><circle cx="12" cy="12" r="9"/></svg>', label: 'Admin' },
+        { id: 'perfil-e-documentos', icon: chatIcon('currentColor'), label: 'Perfil' }
+      ];
+
+      var html = '';
+      html += statusBar();
+      html += '<main class="flex-1 overflow-y-auto overscroll-y-contain" id="main-content">';
+      html += '    <!-- TELAS -->';
+      html += '</main>';
+      html += '<nav class="flex items-center bg-white border-t border-cinza-100 flex-shrink-0 pb-[env(safe-area-inset-bottom)]">';
+      for (var i = 0; i < navItems.length; i++) {
+        html += '<div class="flex-1">' + navBtn(navItems[i].id, navItems[i].icon, navItems[i].label) + '</div>';
+      }
+      html += '</nav>';
+
+      appEl.innerHTML = html;
+
+      window.mostrarTela = function (id) {
+        var sels = document.querySelectorAll('[data-tela]');
+        for (var i = 0; i < sels.length; i++) sels[i].classList.toggle('hidden', sels[i].dataset.tela !== id);
+        var btns = document.querySelectorAll('[data-nav]');
+        for (var j = 0; j < btns.length; j++) btns[j].classList.toggle('ativo', btns[j].dataset.nav === id);
+        window.scrollTo({ top: 0 });
+        var mc = document.getElementById('main-content');
+        if (mc) mc.scrollTop = 0;
+      };
+
+      window.brl = function (v) {
+        if (v == null) return 'R$ 0,00';
+        return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      };
+      window.dataBR = function (iso) {
+        if (!iso) return '—';
+        var d = new Date(iso + 'T03:00:00');
+        return d.toLocaleDateString('pt-BR');
+      };
+      window.toast = function (msg, tipo) {
+        var container = document.getElementById('toast-container');
+        var cores = { ok: { bg: '#ECFDF5', border: '#A7F3D0', text: '#065F46', icon: '✓' }, erro: { bg: '#FEF2F2', border: '#FECACA', text: '#991B1B', icon: '✕' }, info: { bg: '#EFF6FF', border: '#BFDBFE', text: '#1E40AF', icon: 'ℹ' } };
+        var c = cores[tipo] || cores.info;
+        var el = document.createElement('div');
+        el.className = 'toast-in';
+        el.style.cssText = 'background:' + c.bg + ';border:1px solid ' + c.border + ';color:' + c.text + ';padding:12px 16px;border-radius:12px;font-family:Nunito,sans-serif;font-size:0.88rem;font-weight:600;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,0.12);pointer-events:auto;';
+        el.innerHTML = '<span style="width:22px;height:22px;border-radius:50%;background:' + c.text + ';color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.7rem;flex-shrink:0;">' + c.icon + '</span>' + msg;
+        container.appendChild(el);
+        setTimeout(function () { el.className = 'toast-out'; }, 2700);
+        setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 3100);
+      };
+      window.abrirModal = function (htmlConteudo, titulo) {
+        document.getElementById('modal-titulo').textContent = titulo || '';
+        document.getElementById('modal-conteudo').innerHTML = htmlConteudo;
+        var overlay = document.getElementById('modal-overlay');
+        overlay.classList.add('aberto');
+        overlay.style.display = 'flex';
+      };
+      window.fecharModal = function () {
+        var overlay = document.getElementById('modal-overlay');
+        overlay.classList.remove('aberto');
+        setTimeout(function () { overlay.style.display = 'none'; }, 300);
+      };
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fecharModal(); });
+
+      var hrEl = document.getElementById('hora-display');
+      function tickHora() {
+        if (hrEl) hrEl.textContent = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      }
+      tickHora();
+      setInterval(tickHora, 30000);
+
+      document.addEventListener('DOMContentLoaded', function () { mostrarTela('home-do-motoboy'); });
+    })();
+  </script>
+</body>
+</html>
