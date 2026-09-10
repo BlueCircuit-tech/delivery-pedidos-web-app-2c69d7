@@ -2715,6 +2715,628 @@
       function painel_financeiro_mudarPeriodo(v) { toast(v === '12s' ? 'Exibindo últimos 3 meses' : 'Exibindo últimas 4 semanas', 'info'); }
     </script>
 
+    <section data-tela="painel-admin" class="hidden">
+  <script>
+    // ====== PAINEL ADMIN - DADOS E FUNÇÕES ======
+
+    const painel_admin_kpis = {
+      totalUsuarios: { valor: 1284, variacao: '+12%', icone: 'users', cor: 'text-blue-600', bg: 'bg-blue-50' },
+      corridasHoje: { valor: 87, variacao: '+23%', icone: 'truck', cor: 'text-green-600', bg: 'bg-green-50' },
+      receitaMes: { valor: 45230.00, variacao: '+8%', icone: 'currency', cor: 'text-amber-600', bg: 'bg-amber-50' },
+      taxaAceitacao: { valor: 94, variacao: '+3%', icone: 'check', cor: 'text-purple-600', bg: 'bg-purple-50' }
+    };
+
+    const painel_admin_usuariosPendentes = [
+      { id: 1, nome: 'Carlos Eduardo Lima', tipo: 'motoboy', cidade: 'São Paulo, SP', documento: 'CNH: 12345678901', veiculo: 'Honda CG 160 - Roxa', placa: 'ABC1D23', status: 'pendente', data: '2026-01-15' },
+      { id: 2, nome: 'Pizzaria Bella Napoli', tipo: 'estabelecimento', cidade: 'São Paulo, SP', documento: 'CNPJ: 12.345.678/0001-90', veiculo: '-', placa: '-', status: 'pendente', data: '2026-01-14' },
+      { id: 3, nome: 'Rafael Santos Oliveira', tipo: 'motoboy', cidade: 'Guarulhos, SP', documento: 'CNH: 98765432100', veiculo: 'Yamaha Factor 150 - Preta', placa: 'DEF4G56', status: 'pendente', data: '2026-01-14' },
+      { id: 4, nome: 'Sushi House Liberdade', tipo: 'estabelecimento', cidade: 'São Paulo, SP', documento: 'CNPJ: 98.765.432/0001-12', veiculo: '-', placa: '-', status: 'pendente', data: '2026-01-13' },
+      { id: 5, nome: 'Anderson Ferreira Costa', tipo: 'motoboy', cidade: 'Osasco, SP', documento: 'CNH: 45678912300', veiculo: 'Honda Biz 125 - Vermelha', placa: 'GHI7J89', status: 'pendente', data: '2026-01-13' },
+      { id: 6, nome: 'Lanchonete do Zé', tipo: 'estabelecimento', cidade: 'Barueri, SP', documento: 'CNPJ: 45.678.912/0001-34', veiculo: '-', placa: '-', status: 'pendente', data: '2026-01-12' },
+      { id: 7, nome: 'Diego Almeida Rocha', tipo: 'motoboy', cidade: 'São Paulo, SP', documento: 'CNH: 32165498700', veiculo: 'Honda Pop 110i - Branca', placa: 'JKL0M12', status: 'pendente', data: '2026-01-12' },
+    ];
+
+    const painel_admin_corridasSemana = [
+      { dia: 'Seg', valor: 62 },
+      { dia: 'Ter', valor: 78 },
+      { dia: 'Qua', valor: 91 },
+      { dia: 'Qui', valor: 85 },
+      { dia: 'Sex', valor: 105 },
+      { dia: 'Sáb', valor: 112 },
+      { dia: 'Dom', valor: 74 },
+    ];
+
+    const painel_admin_config = {
+      taxaMinima: 10.00,
+      taxaPlataformaPercentual: 8,
+      planoBasicoNome: 'Básico',
+      planoBasicoValor: 49.90,
+      planoBasicoCorridas: 50,
+      planoProNome: 'Profissional',
+      planoProValor: 99.90,
+      planoProCorridas: 200,
+      planoEmpresaNome: 'Empresarial',
+      planoEmpresaValor: 249.90,
+      planoEmpresaCorridas: 1000,
+    };
+
+    const painel_admin_planos = ['basico', 'profissional', 'empresarial'];
+    let painel_admin_planoAtivo = 'basico';
+
+    function painel_admin_iconeSVG(tipo) {
+      const icones = {
+        users: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>',
+        truck: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>',
+        currency: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+        check: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+        search: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>',
+        filter: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>',
+        eye: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>',
+        cnh: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V4a2 2 0 012-2h4a2 2 0 012 2v2m-6 5h6"/></svg>',
+        bike: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.5" stroke-width="2"/><circle cx="18.5" cy="17.5" r="3.5" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 6h-3l-3 8h3M14 14l3-8h2.5a2.5 2.5 0 010 5H16"/></svg>',
+        plus: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>',
+        x: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>',
+        edit: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>',
+        save: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>',
+        shield: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>',
+      };
+      return icones[tipo] || '';
+    }
+
+    function painel_admin_corInicial(nome) {
+      const cores = ['bg-red-400','bg-blue-400','bg-green-400','bg-amber-400','bg-purple-400','bg-pink-400','bg-teal-400','bg-indigo-400','bg-orange-400','bg-cyan-400'];
+      let hash = 0;
+      for (let i = 0; i < nome.length; i++) hash = nome.charCodeAt(i) + ((hash << 5) - hash);
+      return cores[Math.abs(hash) % cores.length];
+    }
+
+    function painel_admin_formatarStatus(status, tipo) {
+      if (tipo === 'motoboy') {
+        const cfg = { pendente: 'bg-yellow-100 text-yellow-700', aprovado: 'bg-green-100 text-green-700', reprovado: 'bg-red-100 text-red-700' };
+        const labels = { pendente: 'Pendente', aprovado: 'Aprovado', reprovado: 'Reprovado' };
+        return `<span class="badge ${cfg[status] || cfg.pendente}">${labels[status] || status}</span>`;
+      }
+      const cfg = { pendente: 'bg-yellow-100 text-yellow-700', aprovado: 'bg-green-100 text-green-700', reprovado: 'bg-red-100 text-red-700' };
+      const labels = { pendente: 'Pendente', aprovado: 'Aprovado', reprovado: 'Reprovado' };
+      return `<span class="badge ${cfg[status] || cfg.pendente}">${labels[status] || status}</span>`;
+    }
+
+    function painel_admin_tipoLabel(tipo) {
+      return tipo === 'motoboy'
+        ? '<span class="inline-flex items-center gap-1 text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">🏍️ Motoboy</span>'
+        : '<span class="inline-flex items-center gap-1 text-xs font-medium text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">🏪 Estabelecimento</span>';
+    }
+
+    function painel_admin_renderizarUsuarios(filtro) {
+      const container = document.getElementById('painel-admin-lista-usuarios');
+      const vazio = document.getElementById('painel-admin-vazio-usuarios');
+      const busca = (document.getElementById('painel-admin-busca-usuarios')?.value || '').toLowerCase();
+      const filtroTipo = document.getElementById('painel-admin-filtro-tipo')?.value || 'todos';
+
+      let lista = painel_admin_usuariosPendentes.filter(u => {
+        const matchBusca = !busca || u.nome.toLowerCase().includes(busca) || u.cidade.toLowerCase().includes(busca);
+        const matchFiltro = filtroTipo === 'todos' || u.tipo === filtroTipo;
+        return matchBusca && matchFiltro;
+      });
+
+      if (lista.length === 0) {
+        container.classList.add('hidden');
+        vazio.classList.remove('hidden');
+        return;
+      }
+      container.classList.remove('hidden');
+      vazio.classList.add('hidden');
+
+      container.innerHTML = lista.map(u => `
+        <div class="flex items-start gap-3 p-3 bg-white rounded-xl border border-gray-100 hover:border-gray-200 transition-colors">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full ${painel_admin_corInicial(u.nome)} flex items-center justify-center text-white font-semibold text-sm">
+            ${u.nome.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <p class="text-sm font-semibold text-gray-900 truncate">${u.nome}</p>
+              ${painel_admin_tipoLabel(u.tipo)}
+            </div>
+            <p class="text-xs text-gray-500 mb-1">${u.cidade}</p>
+            <p class="text-xs text-gray-400">📄 ${u.documento}</p>
+            ${u.veiculo !== '-' ? `<p class="text-xs text-gray-400">🏍️ ${u.veiculo} • ${u.placa}</p>` : ''}
+            <p class="text-xs text-gray-400 mt-0.5">📅 Cadastrado em ${dataBR(u.data + 'T00:00:00')}</p>
+          </div>
+          <div class="flex flex-col items-end gap-1.5 flex-shrink-0">
+            ${painel_admin_formatarStatus(u.status, u.tipo)}
+            <div class="flex gap-1">
+              <button onclick="painel_admin_aprovar(${u.id})" class="p-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 active:scale-90 transition-all" title="Aprovar">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              </button>
+              <button onclick="painel_admin_reprovar(${u.id})" class="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 active:scale-90 transition-all" title="Reprovar">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function painel_admin_aprovar(id) {
+      const u = painel_admin_usuariosPendentes.find(x => x.id === id);
+      if (u) {
+        u.status = 'aprovado';
+        painel_admin_renderizarUsuarios();
+        toast(`${u.nome} foi aprovado(a) com sucesso!`, 'ok');
+      }
+    }
+
+    function painel_admin_reprovar(id) {
+      const u = painel_admin_usuariosPendentes.find(x => x.id === id);
+      if (u) {
+        abrirModal(`
+          <div class="text-center py-4">
+            <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-3">
+              <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+            </div>
+            <p class="text-sm text-gray-600 mb-1">Reprovar cadastro de</p>
+            <p class="font-semibold text-gray-900 mb-4">${u.nome}</p>
+            <p class="text-xs text-gray-500 mb-5">Essa ação enviará uma notificação ao usuário informando a reprovação.</p>
+            <div class="flex gap-2">
+              <button onclick="fecharModal()" class="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 active:scale-95 transition-all">Cancelar</button>
+              <button onclick="painel_admin_confirmarReprovar(${id})" class="flex-1 px-4 py-2.5 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-700 active:scale-95 transition-all">Reprovar</button>
+            </div>
+          </div>
+        `, 'Confirmar Reprovação');
+      }
+    }
+
+    function painel_admin_confirmarReprovar(id) {
+      const u = painel_admin_usuariosPendentes.find(x => x.id === id);
+      if (u) {
+        u.status = 'reprovado';
+        painel_admin_renderizarUsuarios();
+        toast(`${u.nome} foi reprovado(a).`, 'info');
+      }
+      fecharModal();
+    }
+
+    function painel_admin_renderizarGrafico() {
+      const dados = painel_admin_corridasSemana;
+      const max = Math.max(...dados.map(d => d.valor));
+      const svgW = 280, svgH = 160;
+      const margin = { top: 10, right: 10, bottom: 30, left: 35 };
+      const chartW = svgW - margin.left - margin.right;
+      const chartH = svgH - margin.top - margin.bottom;
+      const barW = chartW / dados.length * 0.6;
+      const gap = chartW / dados.length;
+
+      let barsHTML = '';
+      dados.forEach((d, i) => {
+        const barH = (d.valor / max) * chartH;
+        const x = margin.left + i * gap + (gap - barW) / 2;
+        const y = margin.top + chartH - barH;
+        barsHTML += `
+          <rect x="${x}" y="${y}" width="${barW}" height="${barH}" rx="4" fill="currentColor" class="text-orange-400 hover:text-orange-500 transition-colors" opacity="0.85">
+            <title>${d.dia}: ${d.valor} corridas</title>
+          </rect>
+          <text x="${x + barW/2}" y="${margin.top + chartH + 16}" text-anchor="middle" class="text-[10px] fill-gray-500 font-medium">${d.dia}</text>
+          <text x="${x + barW/2}" y="${y - 5}" text-anchor="middle" class="text-[9px] fill-gray-400 font-medium">${d.valor}</text>
+        `;
+      });
+
+      // grid lines
+      const gridLines = [0, 0.5, 1].map(frac => {
+        const y = margin.top + chartH * (1 - frac);
+        const label = frac === 0 ? '0' : frac === 0.5 ? '50' : '100';
+        return `<line x1="${margin.left}" y1="${y}" x2="${margin.left + chartW}" y2="${y}" stroke="#f3f4f6" stroke-width="1"/><text x="${margin.left - 5}" y="${y + 3}" text-anchor="end" class="text-[9px] fill-gray-400">${label}</text>`;
+      }).join('');
+
+      return `<svg viewBox="0 0 ${svgW} ${svgH}" class="w-full" style="max-height:${svgH}px">${gridLines}${barsHTML}</svg>`;
+    }
+
+    function painel_admin_verDocumento(tipo, usuario) {
+      const u = painel_admin_usuariosPendentes.find(x => x.id === usuario);
+      if (!u) return;
+      const titulo = tipo === 'cnh' ? 'Documento de Identidade' : 'Documento do Veículo';
+      const docInfo = tipo === 'cnh' ? u.documento : `${u.veiculo} • ${u.placa}`;
+      abrirModal(`
+        <div class="py-2">
+          <div class="w-full h-40 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center mb-4 border border-gray-200 border-dashed">
+            <div class="text-center">
+              <svg class="w-10 h-10 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              <p class="text-sm text-gray-500">Visualização do documento</p>
+            </div>
+          </div>
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between py-2 border-b border-gray-100">
+              <span class="text-gray-500">Usuário</span>
+              <span class="font-medium text-gray-900">${u.nome}</span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-gray-100">
+              <span class="text-gray-500">Documento</span>
+              <span class="font-medium text-gray-900">${docInfo}</span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-gray-100">
+              <span class="text-gray-500">Tipo</span>
+              <span class="font-medium text-gray-900">${tipo === 'cnh' ? 'CNH / RG' : 'CRLV / Veículo'}</span>
+            </div>
+            <div class="flex justify-between py-2">
+              <span class="text-gray-500">Status</span>
+              ${painel_admin_formatarStatus(u.status, u.tipo)}
+            </div>
+          </div>
+          <div class="flex gap-2 mt-5">
+            <button onclick="fecharModal()" class="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 active:scale-95 transition-all">Fechar</button>
+            <button onclick="painel_admin_aprovar(${u.id}); fecharModal();" class="flex-1 px-4 py-2.5 rounded-xl bg-marca-600 text-white text-sm font-medium hover:bg-marca-700 active:scale-95 transition-all">Aprovar</button>
+          </div>
+        </div>
+      `, titulo);
+    }
+
+    function painel_admin_editarConfig() {
+      abrirModal(`
+        <div class="space-y-5 py-2">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Taxa Mínima da Corrida (R$)</label>
+            <input type="number" id="modal-taxa-minima" value="${painel_admin_config.taxaMinima}" step="0.50" min="0" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-marca-500 focus:border-transparent outline-none transition-all">
+            <p class="text-xs text-gray-400 mt-1">Valor mínimo pago ao motoboy por corrida.</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Taxa da Plataforma (%)</label>
+            <input type="number" id="modal-taxa-percentual" value="${painel_admin_config.taxaPlataformaPercentual}" step="0.5" min="0" max="30" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-marca-500 focus:border-transparent outline-none transition-all">
+            <p class="text-xs text-gray-400 mt-1">Percentual cobrado do estabelecimento por corrida.</p>
+          </div>
+          <div class="flex gap-2 pt-2">
+            <button onclick="fecharModal()" class="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 active:scale-95 transition-all">Cancelar</button>
+            <button onclick="painel_admin_salvarConfig()" class="flex-1 px-4 py-2.5 rounded-xl bg-marca-600 text-white text-sm font-medium hover:bg-marca-700 active:scale-95 transition-all flex items-center justify-center gap-1.5">
+              ${painel_admin_iconeSVG('save')} Salvar
+            </button>
+          </div>
+        </div>
+      `, 'Configurações de Taxa');
+    }
+
+    function painel_admin_salvarConfig() {
+      const taxaMinima = parseFloat(document.getElementById('modal-taxa-minima')?.value || '10');
+      const taxaPercentual = parseFloat(document.getElementById('modal-taxa-percentual')?.value || '8');
+      if (isNaN(taxaMinima) || taxaMinima < 0) { toast('Taxa mínima inválida.', 'erro'); return; }
+      if (isNaN(taxaPercentual) || taxaPercentual < 0 || taxaPercentual > 30) { toast('Percentual inválido.', 'erro'); return; }
+      painel_admin_config.taxaMinima = taxaMinima;
+      painel_admin_config.taxaPlataformaPercentual = taxaPercentual;
+      document.getElementById('painel-admin-taxa-minima-valor').textContent = `R$ ${taxaMinima.toFixed(2).replace('.', ',')}`;
+      document.getElementById('painel-admin-taxa-percentual-valor').textContent = `${taxaPercentual}%`;
+      fecharModal();
+      toast('Configurações salvas com sucesso!', 'ok');
+    }
+
+    function painel_admin_selecionarPlano(plano) {
+      painel_admin_planoAtivo = plano;
+      document.querySelectorAll('[data-plano-btn]').forEach(btn => {
+        btn.classList.toggle('ring-2', btn.dataset.planoBtn === plano);
+        btn.classList.toggle('ring-marca-500', btn.dataset.planoBtn === plano);
+        btn.classList.toggle('ring-offset-1', btn.dataset.planoBtn === plano);
+      });
+    }
+
+    function painel_admin_editarPlano(planoKey) {
+      const p = planoKey === 'basico' ? { ...painel_admin_config, key: 'basico' } :
+                planoKey === 'profissional' ? { ...painel_admin_config, key: 'profissional' } :
+                { ...painel_admin_config, key: 'empresarial' };
+      const nomeField = planoKey === 'basico' ? 'planoBasicoNome' : planoKey === 'profissional' ? 'planoProNome' : 'planoEmpresaNome';
+      const valorField = planoKey === 'basico' ? 'planoBasicoValor' : planoKey === 'profissional' ? 'planoProValor' : 'planoEmpresaValor';
+      const corridasField = planoKey === 'basico' ? 'planoBasicoCorridas' : planoKey === 'profissional' ? 'planoProCorridas' : 'planoEmpresaCorridas';
+      abrirModal(`
+        <div class="space-y-4 py-2">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Nome do Plano</label>
+            <input type="text" id="modal-plano-nome" value="${painel_admin_config[nomeField]}" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-marca-500 focus:border-transparent outline-none transition-all">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Valor Mensal (R$)</label>
+            <input type="number" id="modal-plano-valor" value="${painel_admin_config[valorField]}" step="0.01" min="0" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-marca-500 focus:border-transparent outline-none transition-all">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Corridas Incluídas / mês</label>
+            <input type="number" id="modal-plano-corridas" value="${painel_admin_config[corridasField]}" step="1" min="0" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-marca-500 focus:border-transparent outline-none transition-all">
+          </div>
+          <div class="flex gap-2 pt-2">
+            <button onclick="fecharModal()" class="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 active:scale-95 transition-all">Cancelar</button>
+            <button onclick="painel_admin_salvarPlano('${planoKey}')" class="flex-1 px-4 py-2.5 rounded-xl bg-marca-600 text-white text-sm font-medium hover:bg-marca-700 active:scale-95 transition-all flex items-center justify-center gap-1.5">
+              ${painel_admin_iconeSVG('save')} Salvar
+            </button>
+          </div>
+        </div>
+      `, `Editar Plano`);
+    }
+
+    function painel_admin_salvarPlano(key) {
+      const nomeEl = document.getElementById('modal-plano-nome');
+      const valorEl = document.getElementById('modal-plano-valor');
+      const corridasEl = document.getElementById('modal-plano-corridas');
+      if (!nomeEl || !valorEl || !corridasEl) return;
+      const nome = nomeEl.value.trim();
+      const valor = parseFloat(valorEl.value);
+      const corridas = parseInt(corridasEl.value);
+      if (!nome) { toast('Nome do plano é obrigatório.', 'erro'); return; }
+      if (isNaN(valor) || valor < 0) { toast('Valor inválido.', 'erro'); return; }
+      if (isNaN(corridas) || corridas < 0) { toast('Número de corridas inválido.', 'erro'); return; }
+
+      if (key === 'basico') { painel_admin_config.planoBasicoNome = nome; painel_admin_config.planoBasicoValor = valor; painel_admin_config.planoBasicoCorridas = corridas; }
+      else if (key === 'profissional') { painel_admin_config.planoProNome = nome; painel_admin_config.planoProValor = valor; painel_admin_config.planoProCorridas = corridas; }
+      else { painel_admin_config.planoEmpresaNome = nome; painel_admin_config.planoEmpresaValor = valor; painel_admin_config.planoEmpresaCorridas = corridas; }
+
+      painel_admin_renderizarPlanos();
+      fecharModal();
+      toast(`Plano "${nome}" atualizado!`, 'ok');
+    }
+
+    function painel_admin_renderizarPlanos() {
+      const container = document.getElementById('painel-admin-planos-cards');
+      const planos = [
+        { key: 'basico', nome: painel_admin_config.planoBasicoNome, valor: painel_admin_config.planoBasicoValor, corridas: painel_admin_config.planoBasicoCorridas, cor: 'border-blue-200 bg-blue-50/50', icone: '📦' },
+        { key: 'profissional', nome: painel_admin_config.planoProNome, valor: painel_admin_config.planoProValor, corridas: painel_admin_config.planoProCorridas, cor: 'border-orange-200 bg-orange-50/50', destaque: true, icone: '⭐' },
+        { key: 'empresarial', nome: painel_admin_config.planoEmpresaNome, valor: painel_admin_config.planoEmpresaValor, corridas: painel_admin_config.planoEmpresaCorridas, cor: 'border-purple-200 bg-purple-50/50', icone: '🏢' },
+      ];
+      container.innerHTML = planos.map(p => `
+        <div class="relative rounded-2xl border-2 ${p.cor} ${p.destaque ? 'ring-2 ring-orange-300 ring-offset-1' : ''} p-4 transition-all hover:shadow-md">
+          ${p.destaque ? '<span class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full">Mais Popular</span>' : ''}
+          <div class="text-center mb-3">
+            <span class="text-2xl mb-1 block">${p.icone}</span>
+            <h4 class="font-semibold text-gray-900">${p.nome}</h4>
+            <p class="text-2xl font-bold text-gray-900 mt-1">R$ ${p.valor.toFixed(2).replace('.', ',')}<span class="text-xs font-normal text-gray-500">/mês</span></p>
+            <p class="text-xs text-gray-500 mt-0.5">até ${p.corridas} corridas/mês</p>
+          </div>
+          <button onclick="painel_admin_editarPlano('${p.key}')" class="w-full py-2 rounded-xl border border-gray-200 text-xs font-medium text-gray-600 hover:bg-white hover:shadow-sm active:scale-95 transition-all flex items-center justify-center gap-1">
+            ${painel_admin_iconeSVG('edit')} Editar
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function painel_admin_abrirDetalheUsuario(id) {
+      const u = painel_admin_usuariosPendentes.find(x => x.id === id);
+      if (!u) return;
+      abrirModal(`
+        <div class="py-2">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-14 h-14 rounded-full ${painel_admin_corInicial(u.nome)} flex items-center justify-center text-white text-lg font-bold">
+              ${u.nome.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900">${u.nome}</h3>
+              ${painel_admin_tipoLabel(u.tipo)}
+            </div>
+          </div>
+          <div class="space-y-2.5 text-sm">
+            <div class="flex justify-between py-2 border-b border-gray-100">
+              <span class="text-gray-500">📍 Cidade</span>
+              <span class="font-medium text-gray-900">${u.cidade}</span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-gray-100">
+              <span class="text-gray-500">📄 Documento</span>
+              <span class="font-medium text-gray-900">${u.documento}</span>
+            </div>
+            ${u.veiculo !== '-' ? `
+            <div class="flex justify-between py-2 border-b border-gray-100">
+              <span class="text-gray-500">🏍️ Veículo</span>
+              <span class="font-medium text-gray-900">${u.veiculo}</span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-gray-100">
+              <span class="text-gray-500">🔢 Placa</span>
+              <span class="font-medium text-gray-900">${u.placa}</span>
+            </div>` : ''}
+            <div class="flex justify-between py-2 border-b border-gray-100">
+              <span class="text-gray-500">📅 Cadastro</span>
+              <span class="font-medium text-gray-900">${dataBR(u.data + 'T00:00:00')}</span>
+            </div>
+            <div class="flex justify-between py-2">
+              <span class="text-gray-500">Status</span>
+              ${painel_admin_formatarStatus(u.status, u.tipo)}
+            </div>
+          </div>
+          <div class="flex gap-2 mt-5">
+            <button onclick="fecharModal()" class="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 active:scale-95 transition-all">Fechar</button>
+            <button onclick="painel_admin_aprovar(${u.id}); fecharModal();" class="flex-1 px-4 py-2.5 rounded-xl bg-green-600 text-white text-sm font-medium hover:bg-green-700 active:scale-95 transition-all">Aprovar</button>
+            <button onclick="painel_admin_reprovar(${u.id}); fecharModal();" class="flex-1 px-4 py-2.5 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-700 active:scale-95 transition-all">Reprovar</button>
+          </div>
+        </div>
+      `, 'Detalhes do Usuário');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const buscaEl = document.getElementById('painel-admin-busca-usuarios');
+      const filtroEl = document.getElementById('painel-admin-filtro-tipo');
+      if (buscaEl) buscaEl.addEventListener('input', () => painel_admin_renderizarUsuarios());
+      if (filtroEl) filtroEl.addEventListener('change', () => painel_admin_renderizarUsuarios());
+    });
+  </script>
+
+  <!-- CONTEÚDO PRINCIPAL DO PAINEL ADMIN -->
+  <div class="p-4 space-y-5 fade-in">
+
+    <!-- Cabeçalho da Tela -->
+    <div class="flex items-start justify-between">
+      <div>
+        <h1 class="text-xl font-bold text-gray-900 font-display">Painel Administrativo</h1>
+        <p class="text-sm text-gray-500 mt-0.5">Visão geral da plataforma • Hoje, ${new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+      </div>
+      <button onclick="mostrarTela('configuracoes')" class="p-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 active:scale-95 transition-all text-gray-500 hover:text-gray-700">
+        ${painel_admin_iconeSVG('edit')}
+      </button>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-2 gap-3">
+      <div class="card p-4 cursor-pointer hover:shadow-lg transition-shadow" onclick="mostrarTela('painel-admin')">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Total Usuários</span>
+          <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">${painel_admin_iconeSVG('users')}</div>
+        </div>
+        <p class="text-2xl font-bold text-gray-900 font-display" id="painel-admin-kpi-usuarios">${painel_admin_kpis.totalUsuarios.valor.toLocaleString('pt-BR')}</p>
+        <div class="flex items-center gap-1 mt-1">
+          <span class="text-xs font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">↑ ${painel_admin_kpis.totalUsuarios.variacao}</span>
+          <span class="text-[10px] text-gray-400">vs mês anterior</span>
+        </div>
+      </div>
+
+      <div class="card p-4 cursor-pointer hover:shadow-lg transition-shadow" onclick="mostrarTela('painel-admin')">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Corridas Hoje</span>
+          <div class="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center text-green-600">${painel_admin_iconeSVG('truck')}</div>
+        </div>
+        <p class="text-2xl font-bold text-gray-900 font-display">${painel_admin_kpis.corridasHoje.valor}</p>
+        <div class="flex items-center gap-1 mt-1">
+          <span class="text-xs font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">↑ ${painel_admin_kpis.corridasHoje.variacao}</span>
+          <span class="text-[10px] text-gray-400">vs ontem</span>
+        </div>
+      </div>
+
+      <div class="card p-4 cursor-pointer hover:shadow-lg transition-shadow" onclick="mostrarTela('painel-financeiro')">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Receita Mensal</span>
+          <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">${painel_admin_iconeSVG('currency')}</div>
+        </div>
+        <p class="text-2xl font-bold text-gray-900 font-display">${brl(painel_admin_kpis.receitaMes.valor)}</p>
+        <div class="flex items-center gap-1 mt-1">
+          <span class="text-xs font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">↑ ${painel_admin_kpis.receitaMes.variacao}</span>
+          <span class="text-[10px] text-gray-400">vs mês anterior</span>
+        </div>
+      </div>
+
+      <div class="card p-4 cursor-pointer hover:shadow-lg transition-shadow" onclick="mostrarTela('painel-admin')">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Taxa Aceitação</span>
+          <div class="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600">${painel_admin_iconeSVG('check')}</div>
+        </div>
+        <p class="text-2xl font-bold text-gray-900 font-display">${painel_admin_kpis.taxaAceitacao.valor}%</p>
+        <div class="flex items-center gap-1 mt-1">
+          <span class="text-xs font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">↑ ${painel_admin_kpis.taxaAceitacao.variacao}</span>
+          <span class="text-[10px] text-gray-400">vs semana anterior</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfico de Corridas -->
+    <div class="card p-4">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <h3 class="text-sm font-semibold text-gray-900">Corridas por Dia</h3>
+          <p class="text-xs text-gray-500">Últimos 7 dias</p>
+        </div>
+        <span class="text-xs text-gray-400">Esta semana</span>
+      </div>
+      <div class="flex justify-center">
+        ${painel_admin_renderizarGrafico()}
+      </div>
+    </div>
+
+    <!-- Aprovações Pendentes -->
+    <div>
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <h3 class="text-sm font-semibold text-gray-900">Aprovações Pendentes</h3>
+          <span class="badge badge-warning" id="painel-admin-badge-pendentes">${painel_admin_usuariosPendentes.filter(u => u.status === 'pendente').length}</span>
+        </div>
+      </div>
+
+      <!-- Filtros -->
+      <div class="flex gap-2 mb-3">
+        <div class="flex-1 relative">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">${painel_admin_iconeSVG('search')}</span>
+          <input type="text" id="painel-admin-busca-usuarios" placeholder="Buscar por nome ou cidade..."
+            class="w-full pl-9 pr-3 py-2 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-marca-500 focus:border-transparent outline-none transition-all">
+        </div>
+        <select id="painel-admin-filtro-tipo" class="px-3 py-2 rounded-xl border border-gray-200 text-xs bg-white focus:ring-2 focus:ring-marca-500 focus:border-transparent outline-none transition-all">
+          <option value="todos">Todos</option>
+          <option value="motoboy">Motoboys</option>
+          <option value="estabelecimento">Estabelecimentos</option>
+        </select>
+      </div>
+
+      <!-- Lista -->
+      <div id="painel-admin-lista-usuarios" class="space-y-2.5 max-h-[360px] overflow-y-auto pr-1">
+        ${painel_admin_renderizarUsuarios('')}
+      </div>
+
+      <!-- Estado Vazio -->
+      <div id="painel-admin-vazio-usuarios" class="hidden text-center py-8">
+        <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
+          <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+        <p class="text-sm text-gray-500 font-medium">Nenhum usuário encontrado</p>
+        <p class="text-xs text-gray-400 mt-1">Tente ajustar os filtros de busca.</p>
+      </div>
+    </div>
+
+    <!-- Configurações e Planos -->
+    <div class="grid grid-cols-1 gap-4">
+      <!-- Configurações de Taxa -->
+      <div class="card p-4">
+        <h3 class="text-sm font-semibold text-gray-900 mb-3">Configurações da Plataforma</h3>
+        <div class="flex items-center justify-between py-2.5 border-b border-gray-100">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center text-orange-600">
+              ${painel_admin_iconeSVG('currency')}
+            </div>
+            <div>
+              <p class="text-xs text-gray-500">Taxa Mínima por Corrida</p>
+              <p class="text-sm font-semibold text-gray-900" id="painel-admin-taxa-minima-valor">R$ ${painel_admin_config.taxaMinima.toFixed(2).replace('.', ',')}</p>
+            </div>
+          </div>
+          <button onclick="painel_admin_editarConfig()" class="text-xs font-medium text-marca-600 hover:text-marca-700 active:scale-95 transition-all px-3 py-1.5 rounded-lg hover:bg-marca-50">Alterar</button>
+        </div>
+        <div class="flex items-center justify-between py-2.5">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600">
+              ${painel_admin_iconeSVG('shield')}
+            </div>
+            <div>
+              <p class="text-xs text-gray-500">Taxa da Plataforma</p>
+              <p class="text-sm font-semibold text-gray-900" id="painel-admin-taxa-percentual-valor">${painel_admin_config.taxaPlataformaPercentual}% por corrida</p>
+            </div>
+          </div>
+          <button onclick="painel_admin_editarConfig()" class="text-xs font-medium text-marca-600 hover:text-marca-700 active:scale-95 transition-all px-3 py-1.5 rounded-lg hover:bg-marca-50">Alterar</button>
+        </div>
+      </div>
+
+      <!-- Planos de Assinatura -->
+      <div class="card p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-semibold text-gray-900">Planos de Assinatura</h3>
+          <button onclick="mostrarTela('painel-admin')" class="text-xs font-medium text-marca-600 hover:text-marca-700 active:scale-95 transition-all px-3 py-1.5 rounded-lg hover:bg-marca-50">Gerenciar</button>
+        </div>
+        <div id="painel-admin-planos-cards" class="grid grid-cols-3 gap-2.5">
+          ${''}
+        </div>
+      </div>
+    </div>
+
+    <!-- Navegação Rápida -->
+    <div class="card p-4">
+      <h3 class="text-sm font-semibold text-gray-900 mb-3">Acesso Rápido</h3>
+      <div class="grid grid-cols-4 gap-2">
+        <button onclick="mostrarTela('home-do-estabelecimento')" class="flex flex-col items-center gap-1.5 p-3 rounded-xl border border-gray-100 hover:border-orange-200 hover:bg-orange-50 active:scale-95 transition-all">
+          <span class="text-lg">🏪</span>
+          <span class="text-[10px] font-medium text-gray-600 text-center leading-tight">Estabs.</span>
+        </button>
+        <button onclick="mostrarTela('home-do-motoboy')" class="flex flex-col items-center gap-1.5 p-3 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 active:scale-95 transition-all">
+          <span class="text-lg">🏍️</span>
+          <span class="text-[10px] font-medium text-gray-600 text-center leading-tight">Motoboys</span>
+        </button>
+        <button onclick="mostrarTela('painel-financeiro')" class="flex flex-col items-center gap-1.5 p-3 rounded-xl border border-gray-100 hover:border-green-200 hover:bg-green-50 active:scale-95 transition-all">
+          <span class="text-lg">💰</span>
+          <span class="text-[10px] font-medium text-gray-600 text-center leading-tight">Financeiro</span>
+        </button>
+        <button onclick="mostrarTela('painel-admin')" class="flex flex-col items-center gap-1.5 p-3 rounded-xl border border-gray-100 hover:border-purple-200 hover:bg-purple-50 active:scale-95 transition-all">
+          <span class="text-lg">⚙️</span>
+          <span class="text-[10px] font-medium text-gray-600 text-center leading-tight">Config.</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Footer Info -->
+    <div class="text-center pt-1 pb-3">
+      <p class="text-[10px] text-gray-400">MotoHub Admin v1.0 • Todos os dados são fictícios</p>
+    </div>
+  </div>
+</section>
+
     <!-- TELAS -->';
       html += '</main>';
       html += '<nav class="flex items-center bg-white border-t border-cinza-100 flex-shrink-0 pb-[env(safe-area-inset-bottom)]">';
