@@ -1917,6 +1917,430 @@
       </script>
     </section>
 
+    <section data-tela="nova-corrida" class="hidden">
+      <div class="px-5 py-5 pb-24 max-w-[430px] mx-auto">
+        <!-- Header -->
+        <div class="mb-6">
+          <h1 class="font-display text-2xl font-bold text-gray-900 leading-tight">Solicitar Motoboy</h1>
+          <p class="text-sm text-gray-500 mt-1 font-body">Preencha os dados da entrega para encontrar um entregador próximo</p>
+        </div>
+
+        <form id="form-nova-corrida" onsubmit="return false;" class="space-y-5">
+
+          <!-- Origem -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Endereço de origem</label>
+            <p class="text-xs text-gray-400 mb-2">Endereço do estabelecimento para coleta</p>
+            <div class="relative">
+              <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-emerald-500">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <input id="nc-origem" type="text" placeholder="Rua, número, bairro"
+                class="w-full pl-11 pr-10 py-3.5 bg-white border border-gray-200 rounded-2xl text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition-all"
+                onfocus="nova_corrida_abrir_sugestoes('origem')" oninput="nova_corrida_filtrar_sugestoes('origem', this.value)" onblur="setTimeout(()=>nova_corrida_fechar_sugestoes('origem'), 200)">
+              <button type="button" onclick="nova_corrida_limpar('origem')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 hidden" id="nc-origem-clear">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div id="nc-sugestoes-origem" class="hidden mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden z-50 relative"></div>
+          </div>
+
+          <!-- Destino -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Endereço de destino</label>
+            <p class="text-xs text-gray-400 mb-2">Para onde o motoboy vai levar</p>
+            <div class="relative">
+              <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-500">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+              </div>
+              <input id="nc-destino" type="text" placeholder="Rua, número, bairro"
+                class="w-full pl-11 pr-10 py-3.5 bg-white border border-gray-200 rounded-2xl text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all"
+                onfocus="nova_corrida_abrir_sugestoes('destino')" oninput="nova_corrida_filtrar_sugestoes('destino', this.value)" onblur="setTimeout(()=>nova_corrida_fechar_sugestoes('destino'), 200)">
+              <button type="button" onclick="nova_corrida_limpar('destino')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 hidden" id="nc-destino-clear">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div id="nc-sugestoes-destino" class="hidden mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden z-50 relative"></div>
+          </div>
+
+          <!-- Mapa preview -->
+          <div id="nc-mapa-preview" class="hidden">
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Rota prevista</label>
+            <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100 overflow-hidden relative" style="height:180px;">
+              <svg class="absolute inset-0 w-full h-full" viewBox="0 0 400 180">
+                <rect width="400" height="180" fill="url(#mapBg)" rx="0"/>
+                <defs><linearGradient id="mapBg" x1="0" y1="0" x2="400" y2="180"><stop offset="0%" stop-color="#f0fdf4"/><stop offset="100%" stop-color="#ccfbf1"/></linearGradient></defs>
+                <line x1="80" y1="60" x2="320" y2="140" stroke="#10b981" stroke-width="3" stroke-dasharray="8 5" opacity="0.5"/>
+                <circle cx="80" cy="60" r="7" fill="#10b981" stroke="white" stroke-width="2"/>
+                <text x="80" y="45" text-anchor="middle" fill="#065f46" font-size="9" font-weight="600">Origem</text>
+                <circle cx="320" cy="140" r="7" fill="#f59e0b" stroke="white" stroke-width="2"/>
+                <text x="320" y="160" text-anchor="middle" fill="#92400e" font-size="9" font-weight="600">Destino</text>
+              </svg>
+              <div class="absolute bottom-3 left-3 right-3 flex gap-2">
+                <span class="inline-flex items-center gap-1 bg-white/90 backdrop-blur-sm text-xs font-semibold text-gray-700 px-2.5 py-1.5 rounded-lg"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg> 2,8 km</span>
+                <span class="inline-flex items-center gap-1 bg-white/90 backdrop-blur-sm text-xs font-semibold text-gray-700 px-2.5 py-1.5 rounded-lg"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ~10 min</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Valor da taxa -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Valor da taxa de entrega</label>
+            <p class="text-xs text-gray-400 mb-2">Valor que você está oferecendo ao motoboy</p>
+            <div class="relative">
+              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 font-semibold text-sm">R$</span>
+              <input id="nc-valor" type="text" placeholder="0,00" inputmode="decimal"
+                class="w-full pl-14 pr-20 py-3.5 bg-white border border-gray-200 rounded-2xl text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition-all font-semibold"
+                oninput="nova_corrida_mascara_moeda(this)" onblur="nova_corrida_validar_valor()">
+              <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded-lg">mín. R$ 10,00</span>
+            </div>
+            <p id="nc-valor-aviso" class="hidden text-xs text-amber-600 mt-1.5 flex items-center gap-1">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              A taxa mínima é de R$ 10,00 para o motoboy aceitar.
+            </p>
+          </div>
+
+          <!-- Observações -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Observações</label>
+            <p class="text-xs text-gray-400 mb-2">Detalhes adicionais para o entregador</p>
+            <textarea id="nc-obs" rows="3" placeholder="Ex: Pedido frágil, tocar interfone 24, deixar na portaria..."
+              class="w-full px-4 py-3.5 bg-white border border-gray-200 rounded-2xl text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition-all resize-none"></textarea>
+          </div>
+
+          <!-- Foto do pedido -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Foto do pedido</label>
+            <p class="text-xs text-gray-400 mb-2">Tire uma foto ou escolha da galeria</p>
+            <div id="nc-foto-area" class="relative border-2 border-dashed border-gray-200 rounded-2xl overflow-hidden transition-all hover:border-gray-300">
+              <input type="file" id="nc-foto-input" accept="image/*" capture="environment" class="hidden" onchange="nova_corrida_upload_foto(this)">
+              <button type="button" onclick="document.getElementById('nc-foto-input').click()"
+                class="w-full py-6 flex flex-col items-center gap-2 text-gray-400 hover:text-gray-600 transition-colors" id="nc-foto-trigger">
+                <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                </div>
+                <span class="text-sm font-medium">Adicionar foto do pedido</span>
+                <span class="text-xs">Toque para tirar foto ou escolher da galeria</span>
+              </button>
+              <div id="nc-foto-preview" class="hidden">
+                <img id="nc-foto-img" class="w-full h-48 object-cover" alt="Foto do pedido">
+                <button type="button" onclick="nova_corrida_remover_foto()" class="absolute top-2 right-2 w-8 h-8 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Forma de pagamento -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Pagamento da taxa</label>
+            <div class="grid grid-cols-2 gap-2.5">
+              <label class="nc-pagto-option cursor-pointer">
+                <input type="radio" name="nc-pagto" value="pix" checked class="hidden peer" onchange="nova_corrida_selecionar_pagto(this)">
+                <div class="border-2 border-gray-200 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 rounded-xl p-3.5 text-center transition-all hover:border-gray-300">
+                  <div class="w-10 h-10 mx-auto rounded-full bg-emerald-100 flex items-center justify-center mb-1.5">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h0M2 9.5h20"/></svg>
+                  </div>
+                  <span class="text-xs font-semibold text-gray-700">PIX</span>
+                </div>
+              </label>
+              <label class="nc-pagto-option cursor-pointer">
+                <input type="radio" name="nc-pagto" value="credito" class="hidden peer" onchange="nova_corrida_selecionar_pagto(this)">
+                <div class="border-2 border-gray-200 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 rounded-xl p-3.5 text-center transition-all hover:border-gray-300">
+                  <div class="w-10 h-10 mx-auto rounded-full bg-blue-100 flex items-center justify-center mb-1.5">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/></svg>
+                  </div>
+                  <span class="text-xs font-semibold text-gray-700">Cartão de Crédito</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Resumo -->
+          <div class="bg-gray-50 rounded-2xl p-4 space-y-2.5">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-500">Taxa de entrega</span>
+              <span class="font-semibold text-gray-800" id="nc-resumo-taxa">R$ 0,00</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-500">Taxa de plataforma (10%)</span>
+              <span class="font-semibold text-gray-800" id="nc-resumo-plataforma">R$ 0,00</span>
+            </div>
+            <div class="border-t border-gray-200 pt-2.5 flex justify-between">
+              <span class="text-sm font-semibold text-gray-700">Total estimado</span>
+              <span class="font-bold text-gray-900" id="nc-resumo-total">R$ 0,00</span>
+            </div>
+          </div>
+
+          <!-- Botão solicitar -->
+          <button type="button" onclick="nova_corrida_solicitar()" id="nc-btn-solicitar"
+            class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-lg shadow-emerald-600/25 transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Solicitar Motoboy
+          </button>
+        </form>
+      </div>
+
+      <!-- Tela de acompanhamento (overlay) -->
+      <div id="nc-acompanhamento" class="hidden fixed inset-0 z-[60] bg-gray-50">
+        <div class="h-full flex flex-col max-w-[430px] mx-auto">
+          <!-- Mapa -->
+          <div class="flex-1 relative bg-gradient-to-br from-emerald-50 to-teal-50">
+            <svg class="absolute inset-0 w-full h-full" viewBox="0 0 430 400" preserveAspectRatio="xMidYMid slice">
+              <defs><linearGradient id="mapBg2" x1="0" y1="0" x2="430" y2="400"><stop offset="0%" stop-color="#f0fdf4"/><stop offset="50%" stop-color="#ecfdf5"/><stop offset="100%" stop-color="#ccfbf1"/></linearGradient></defs>
+              <rect width="430" height="400" fill="url(#mapBg2)"/>
+              <line x1="120" y1="100" x2="310" y2="280" stroke="#10b981" stroke-width="3" stroke-dasharray="10 6" opacity="0.4"/>
+              <circle cx="120" cy="100" r="8" fill="#10b981" stroke="white" stroke-width="2.5"/>
+              <text x="120" y="82" text-anchor="middle" fill="#065f46" font-size="10" font-weight="700">Origem</text>
+              <circle cx="310" cy="280" r="8" fill="#f59e0b" stroke="white" stroke-width="2.5"/>
+              <text x="310" y="305" text-anchor="middle" fill="#92400e" font-size="10" font-weight="700">Destino</text>
+              <!-- Pulse animation -->
+              <circle cx="120" cy="100" r="12" fill="#10b981" opacity="0.2">
+                <animate attributeName="r" values="8;20;8" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.3;0;0.3" dur="2s" repeatCount="indefinite"/>
+              </circle>
+            </svg>
+            <!-- Overlay card -->
+            <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-[0_-4px_20px_rgba(0,0,0,0.08)] p-5 pb-8">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <div>
+                  <span class="text-xs font-semibold text-amber-600 uppercase tracking-wide">Aguardando</span>
+                  <p class="text-sm font-bold text-gray-800">Procurando motoboy disponível...</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 mb-4">
+                <div class="flex -space-x-2">
+                  <div class="w-7 h-7 rounded-full bg-emerald-200 flex items-center justify-center text-xs font-bold text-emerald-700 border-2 border-white">C</div>
+                  <div class="w-7 h-7 rounded-full bg-blue-200 flex items-center justify-center text-xs font-bold text-blue-700 border-2 border-white">A</div>
+                  <div class="w-7 h-7 rounded-full bg-amber-200 flex items-center justify-center text-xs font-bold text-amber-700 border-2 border-white">M</div>
+                </div>
+                <span class="text-xs text-gray-500">3 entregadores na região</span>
+              </div>
+              <button type="button" onclick="nova_corrida_cancelar()" class="w-full py-3 bg-gray-100 hover:bg-gray-200 active:scale-[0.98] text-gray-700 font-semibold text-sm rounded-xl transition-all">
+                Cancelar solicitação
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <script>
+      (function(){
+        var _enderecos = [
+          {id:1,label:'Av. Paulista, 1578 – Bela Vista, São Paulo',tipo:'comercial'},
+          {id:2,label:'Rua Augusta, 234 – Consolação, São Paulo',tipo:'comercial'},
+          {id:3,label:'Alameda Santos, 890 – Jardins, São Paulo',tipo:'comercial'},
+          {id:4,label:'Rua da Consolação, 456 – Consolação, São Paulo',tipo:'residencial'},
+          {id:5,label:'Av. Brigadeiro Faria Lima, 2232 – Jardim Paulistano, São Paulo',tipo:'comercial'},
+          {id:6,label:'Rua Haddock Lobo, 345 – Cerqueira César, São Paulo',tipo:'residencial'},
+          {id:7,label:'Rua Oscar Freire, 120 – Jardins, São Paulo',tipo:'comercial'},
+          {id:8,label:'Av. Rebouças, 3050 – Pinheiros, São Paulo',tipo:'comercial'},
+          {id:9,label:'Rua Cardeal Arcoverde, 88 – Pinheiros, São Paulo',tipo:'residencial'},
+          {id:10,label:'Rua Teodoro Sampaio, 1500 – Pinheiros, São Paulo',tipo:'comercial'}
+        ];
+
+        var _sugestoesAbertas = {};
+
+        window.nova_corrida_abrir_sugestoes = function(tipo) {
+          _sugestoesAbertas[tipo] = true;
+          var el = document.getElementById('nc-sugestoes-' + tipo);
+          var input = document.getElementById(tipo === 'origem' ? 'nc-origem' : 'nc-destino');
+          el.innerHTML = '';
+          _enderecos.forEach(function(e) {
+            var div = document.createElement('div');
+            div.className = 'px-4 py-3 hover:bg-gray-50 cursor-pointer text-sm text-gray-700 border-b border-gray-50 last:border-0 transition-colors flex items-center gap-2.5';
+            div.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + e.label;
+            div.onmousedown = function() {
+              input.value = e.label;
+              el.classList.add('hidden');
+              _sugestoesAbertas[tipo] = false;
+              var clearBtn = document.getElementById(tipo + '-clear');
+              if (clearBtn) clearBtn.classList.remove('hidden');
+              if (tipo === 'destino') nova_corrida_mostrar_mapa();
+            };
+            el.appendChild(div);
+          });
+          el.classList.remove('hidden');
+          var clearBtn = document.getElementById(tipo === 'origem' ? 'nc-origem-clear' : 'nc-destino-clear');
+          if (input.value && clearBtn) clearBtn.classList.remove('hidden');
+        };
+
+        window.nova_corrida_fechar_sugestoes = function(tipo) {
+          _sugestoesAbertas[tipo] = false;
+          var el = document.getElementById('nc-sugestoes-' + tipo);
+          if (el) el.classList.add('hidden');
+        };
+
+        window.nova_corrida_filtrar_sugestoes = function(tipo, query) {
+          var el = document.getElementById('nc-sugestoes-' + tipo);
+          var clearBtn = document.getElementById(tipo === 'origem' ? 'nc-origem-clear' : 'nc-destino-clear');
+          if (clearBtn) {
+            clearBtn.classList.toggle('hidden', !query);
+          }
+          if (!query || query.length < 2) {
+            el.classList.add('hidden');
+            return;
+          }
+          var q = query.toLowerCase();
+          var filtrados = _enderecos.filter(function(e) { return e.label.toLowerCase().indexOf(q) > -1; });
+          el.innerHTML = '';
+          if (filtrados.length === 0) {
+            var empty = document.createElement('div');
+            empty.className = 'px-4 py-4 text-sm text-gray-400 text-center';
+            empty.textContent = 'Nenhum endereço encontrado';
+            el.appendChild(empty);
+          } else {
+            filtrados.forEach(function(e) {
+              var div = document.createElement('div');
+              div.className = 'px-4 py-3 hover:bg-gray-50 cursor-pointer text-sm text-gray-700 border-b border-gray-50 last:border-0 transition-colors flex items-center gap-2.5';
+              div.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + e.label;
+              div.onmousedown = function() {
+                var input = document.getElementById(tipo === 'origem' ? 'nc-origem' : 'nc-destino');
+                input.value = e.label;
+                el.classList.add('hidden');
+                _sugestoesAbertas[tipo] = false;
+                if (tipo === 'destino') nova_corrida_mostrar_mapa();
+              };
+              el.appendChild(div);
+            });
+          }
+          el.classList.remove('hidden');
+        };
+
+        window.nova_corrida_limpar = function(tipo) {
+          var input = document.getElementById(tipo === 'origem' ? 'nc-origem' : 'nc-destino');
+          input.value = '';
+          input.focus();
+          var clearBtn = document.getElementById(tipo === 'origem' ? 'nc-origem-clear' : 'nc-destino-clear');
+          if (clearBtn) clearBtn.classList.add('hidden');
+        };
+
+        window.nova_corrida_mostrar_mapa = function() {
+          var destino = document.getElementById('nc-destino').value;
+          if (!destino) return;
+          var preview = document.getElementById('nc-mapa-preview');
+          preview.classList.remove('hidden');
+          preview.style.animation = 'fadeInUp 0.4s ease';
+        };
+
+        window.nova_corrida_mascara_moeda = function(input) {
+          var v = input.value.replace(/[^\d]/g, '');
+          if (v === '') { input.value = ''; return; }
+          v = parseInt(v, 10);
+          input.value = (v / 100).toFixed(2).replace('.', ',');
+          nova_corrida_atualizar_resumo();
+          var clearBtn = document.getElementById('nc-valor-clear');
+        };
+
+        window.nova_corrida_validar_valor = function() {
+          var input = document.getElementById('nc-valor');
+          var aviso = document.getElementById('nc-valor-aviso');
+          var v = parseFloat(input.value.replace(',', '.')) || 0;
+          if (v > 0 && v < 10) {
+            aviso.classList.remove('hidden');
+            input.classList.add('border-amber-300', 'bg-amber-50');
+            input.classList.remove('border-gray-200');
+          } else {
+            aviso.classList.add('hidden');
+            input.classList.remove('border-amber-300', 'bg-amber-50');
+            input.classList.add('border-gray-200');
+          }
+          nova_corrida_atualizar_resumo();
+        };
+
+        window.nova_corrida_atualizar_resumo = function() {
+          var valor = parseFloat(document.getElementById('nc-valor').value.replace(',', '.')) || 0;
+          var taxa = Math.max(valor, 10);
+          var plataforma = taxa * 0.10;
+          var total = taxa + plataforma;
+          document.getElementById('nc-resumo-taxa').textContent = 'R$ ' + taxa.toFixed(2).replace('.', ',');
+          document.getElementById('nc-resumo-plataforma').textContent = 'R$ ' + plataforma.toFixed(2).replace('.', ',');
+          document.getElementById('nc-resumo-total').textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
+        };
+
+        window.nova_corrida_upload_foto = function(input) {
+          var file = input.files[0];
+          if (!file) return;
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            var img = document.getElementById('nc-foto-img');
+            img.src = e.target.result;
+            document.getElementById('nc-foto-trigger').classList.add('hidden');
+            document.getElementById('nc-foto-preview').classList.remove('hidden');
+            toast('Foto adicionada com sucesso', 'ok');
+          };
+          reader.readAsDataURL(file);
+        };
+
+        window.nova_corrida_remover_foto = function() {
+          var input = document.getElementById('nc-foto-input');
+          input.value = '';
+          document.getElementById('nc-foto-trigger').classList.remove('hidden');
+          document.getElementById('nc-foto-preview').classList.add('hidden');
+        };
+
+        window.nova_corrida_selecionar_pagto = function(radio) {
+          document.querySelectorAll('.nc-pagto-option > div').forEach(function(div) {
+            div.classList.remove('border-emerald-500', 'bg-emerald-50');
+            div.classList.add('border-gray-200');
+          });
+          var divs = document.querySelectorAll('.nc-pagto-option > div');
+          document.querySelectorAll('.nc-pagto-option input:checked').forEach(function(r) {
+            var parent = r.closest('.nc-pagto-option');
+            var d = parent.querySelector('div');
+            d.classList.remove('border-gray-200');
+            d.classList.add('border-emerald-500', 'bg-emerald-50');
+          });
+        };
+
+        window.nova_corrida_solicitar = function() {
+          var origem = document.getElementById('nc-origem').value.trim();
+          var destino = document.getElementById('nc-destino').value.trim();
+          var valor = parseFloat(document.getElementById('nc-valor').value.replace(',', '.')) || 0;
+          if (!origem) { toast('Informe o endereço de origem', 'erro'); document.getElementById('nc-origem').focus(); return; }
+          if (!destino) { toast('Informe o endereço de destino', 'erro'); document.getElementById('nc-destino').focus(); return; }
+          if (valor < 10) { toast('A taxa mínima é de R$ 10,00', 'erro'); document.getElementById('nc-valor').focus(); return; }
+          var btn = document.getElementById('nc-btn-solicitar');
+          btn.innerHTML = '<svg class="animate-spin" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="32" stroke-linecap="round"/></svg> Enviando...';
+          btn.disabled = true;
+          setTimeout(function() {
+            btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Solicitado!';
+            btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700', 'shadow-emerald-600/25');
+            btn.classList.add('bg-emerald-500');
+            toast('Motoboy solicitado! Aguardando confirmação.', 'ok');
+            setTimeout(function() {
+              document.getElementById('nc-acompanhamento').classList.remove('hidden');
+              document.body.style.overflow = 'hidden';
+            }, 1200);
+          }, 1500);
+        };
+
+        window.nova_corrida_cancelar = function() {
+          document.getElementById('nc-acompanhamento').classList.add('hidden');
+          document.body.style.overflow = '';
+          var btn = document.getElementById('nc-btn-solicitar');
+          btn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Solicitar Motoboy';
+          btn.disabled = false;
+          btn.classList.add('bg-emerald-600', 'hover:bg-emerald-700', 'shadow-emerald-600/25');
+          btn.classList.remove('bg-emerald-500');
+          toast('Solicitação cancelada', 'info');
+        };
+
+        document.addEventListener('click', function(e) {
+          if (!e.target.closest('#nc-origem') && !e.target.closest('#nc-sugestoes-origem')) {
+            document.getElementById('nc-sugestoes-origem').classList.add('hidden');
+            _sugestoesAbertas.origem = false;
+          }
+          if (!e.target.closest('#nc-destino') && !e.target.closest('#nc-sugestoes-destino')) {
+            document.getElementById('nc-sugestoes-destino').classList.add('hidden');
+            _sugestoesAbertas.destino = false;
+          }
+        });
+      })();
+    </script>
+
     <!-- TELAS -->';
       html += '</main>';
       html += '<nav class="flex items-center bg-white border-t border-cinza-100 flex-shrink-0 pb-[env(safe-area-inset-bottom)]">';
