@@ -3337,6 +3337,552 @@
   </div>
 </section>
 
+    <section data-tela="perfil-e-documentos" class="hidden">
+  <style>
+    .avatar-upload { position: relative; cursor: pointer; }
+    .avatar-upload .edit-overlay {
+      position: absolute; inset: 0; border-radius: 50%;
+      background: rgba(0,0,0,0.45); display: flex; align-items: center;
+      justify-content: center; opacity: 0; transition: opacity .2s;
+    }
+    .avatar-upload:hover .edit-overlay { opacity: 1; }
+    .doc-card { transition: all .2s; }
+    .doc-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,.1); }
+    .field-input { transition: all .2s; border: 1.5px solid #e5e7eb; }
+    .field-input:focus { border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14,165,233,.15); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .upload-zone {
+      border: 2px dashed #d1d5db; border-radius: 12px; padding: 24px;
+      text-align: center; cursor: pointer; transition: all .2s;
+    }
+    .upload-zone:hover { border-color: #0ea5e9; background: rgba(14,165,233,.04); }
+    .tab-btn { position: relative; transition: color .2s; }
+    .tab-btn.active::after {
+      content: ''; position: absolute; bottom: -2px; left: 0; right: 0;
+      height: 3px; background: #0ea5e9; border-radius: 3px 3px 0 0;
+    }
+    .plan-card {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border: 1.5px solid #bae6fd; border-radius: 16px; padding: 20px;
+    }
+    .plan-badge {
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      color: white; padding: 4px 14px; border-radius: 20px; font-size: 13px;
+      font-weight: 600; display: inline-flex; align-items: center; gap: 6px;
+    }
+  </style>
+
+  <!-- Cabeçalho da tela -->
+  <div class="px-5 pt-6 pb-2">
+    <div class="flex items-center justify-between mb-1">
+      <div>
+        <h1 class="font-display text-2xl font-bold text-gray-900">Perfil</h1>
+        <p class="text-gray-500 text-sm mt-0.5">Gerencie seus dados e documentos</p>
+      </div>
+      <button onclick="perfil_e_documentos_toggleEdit()" id="btn-editar-perfil"
+        class="flex items-center gap-1.5 bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium hover:border-sky-400 hover:text-sky-600 transition-all active:scale-95">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+        <span id="label-btn-editar">Editar</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Avatar -->
+  <div class="flex justify-center mt-4 mb-5">
+    <div class="avatar-upload" onclick="perfil_e_documentos_changeAvatar()">
+      <div id="avatar-container" class="w-24 h-24 rounded-full bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-white font-display text-3xl font-bold shadow-lg shadow-sky-200">
+        RC
+      </div>
+      <div class="edit-overlay rounded-full">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Abas de perfil -->
+  <div class="px-5 mb-4">
+    <div class="flex border-b border-gray-200">
+      <button onclick="perfil_e_documentos_switchTab('dados')" id="tab-dados"
+        class="tab-btn active flex-1 pb-3 text-sm font-semibold text-sky-600 text-center">
+        Dados
+      </button>
+      <button onclick="perfil_e_documentos_switchTab('veiculo')" id="tab-veiculo"
+        class="tab-btn flex-1 pb-3 text-sm font-semibold text-gray-400 text-center">
+        Veículo
+      </button>
+      <button onclick="perfil_e_documentos_switchTab('docs')" id="tab-docs"
+        class="tab-btn flex-1 pb-3 text-sm font-semibold text-gray-400 text-center">
+        Documentos
+      </button>
+    </div>
+  </div>
+
+  <!-- ABA: Dados Pessoais / Negócio -->
+  <div id="painel-dados" class="px-5 space-y-4">
+    <div class="card bg-white rounded-2xl p-5 space-y-4">
+      <div class="grid grid-cols-1 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Nome completo</label>
+          <input type="text" value="Rafael Cardoso" readonly
+            class="field-input w-full px-4 py-3 rounded-xl text-sm text-gray-800 bg-gray-50" id="campo-nome">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">CPF</label>
+            <input type="text" value="123.456.789-00" readonly
+              class="field-input w-full px-4 py-3 rounded-xl text-sm text-gray-800 bg-gray-50" id="campo-cpf">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Telefone</label>
+            <input type="text" value="(11) 98765-4321" readonly
+              class="field-input w-full px-4 py-3 rounded-xl text-sm text-gray-800 bg-gray-50" id="campo-telefone">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">E-mail</label>
+          <input type="text" value="rafael.cardoso@email.com" readonly
+            class="field-input w-full px-4 py-3 rounded-xl text-sm text-gray-800 bg-gray-50" id="campo-email">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Endereço</label>
+          <input type="text" value="Rua das Palmeiras, 142 — Vila Mariana, São Paulo - SP" readonly
+            class="field-input w-full px-4 py-3 rounded-xl text-sm text-gray-800 bg-gray-50" id="campo-endereco">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABA: Veículo (só motoboy) -->
+  <div id="painel-veiculo" class="px-5 space-y-4 hidden">
+    <div class="card bg-white rounded-2xl p-5 space-y-4">
+      <div class="flex items-center gap-2 mb-1">
+        <svg class="w-5 h-5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        <h3 class="font-display font-semibold text-gray-900">Dados do Veículo</h3>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="col-span-2">
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Modelo</label>
+          <input type="text" value="Honda CG 160 Fan" readonly
+            class="field-input w-full px-4 py-3 rounded-xl text-sm text-gray-800 bg-gray-50" id="campo-modelo">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Placa</label>
+          <input type="text" value="ABC-1D23" readonly
+            class="field-input w-full px-4 py-3 rounded-xl text-sm text-gray-800 bg-gray-50" id="campo-placa">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Cor</label>
+          <input type="text" value="Preta" readonly
+            class="field-input w-full px-4 py-3 rounded-xl text-sm text-gray-800 bg-gray-50" id="campo-cor">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Ano</label>
+          <input type="text" value="2023" readonly
+            class="field-input w-full px-4 py-3 rounded-xl text-sm text-gray-800 bg-gray-50" id="campo-ano">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Tipo</label>
+          <input type="text" value="Moto" readonly
+            class="field-input w-full px-4 py-3 rounded-xl text-sm text-gray-800 bg-gray-50" id="campo-tipo">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABA: Documentos -->
+  <div id="painel-docs" class="px-5 space-y-4 hidden">
+    <div id="lista-documentos-motoboy">
+      <!-- Documentos do motoboy -->
+      <div class="doc-card card bg-white rounded-2xl p-4 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
+          <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="font-semibold text-sm text-gray-900">CNH</p>
+          <p class="text-xs text-gray-400">Carteira Nacional de Habilitação</p>
+        </div>
+        <span class="badge badge-ok text-xs px-3 py-1 rounded-full font-medium">Aprovado</span>
+      </div>
+
+      <div class="doc-card card bg-white rounded-2xl p-4 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
+          <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="font-semibold text-sm text-gray-900">CRLV</p>
+          <p class="text-xs text-gray-400">Certificado de Registro e Licenciamento</p>
+        </div>
+        <span class="badge badge-warn text-xs px-3 py-1 rounded-full font-medium">Pendente</span>
+      </div>
+
+      <div class="doc-card card bg-white rounded-2xl p-4 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
+          <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="font-semibold text-sm text-gray-900">Comprovante de Residência</p>
+          <p class="text-xs text-gray-400">Últimos 3 meses</p>
+        </div>
+        <button onclick="perfil_e_documentos_reenviar('Comprovante de Residência')"
+          class="text-xs font-semibold text-sky-600 hover:text-sky-700 active:scale-95 transition-all px-3 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100">
+          Enviar Novamente
+        </button>
+      </div>
+    </div>
+
+    <!-- Zona de upload -->
+    <div class="upload-zone" onclick="perfil_e_documentos_simularUpload()">
+      <svg class="w-10 h-10 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+      <p class="text-sm font-semibold text-gray-600">Toque para enviar documento</p>
+      <p class="text-xs text-gray-400 mt-1">PDF, JPG ou PNG — máx. 5 MB</p>
+    </div>
+  </div>
+
+  <!-- ABA: Plano / Estabelecimento -->
+  <div id="painel-plano" class="px-5 space-y-4 hidden">
+    <div class="plan-card">
+      <div class="flex items-center justify-between mb-3">
+        <span class="plan-badge">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+          Plano Pro
+        </span>
+        <span class="text-xs text-gray-500">Renova em 15/08/2025</span>
+      </div>
+      <div class="space-y-2 mb-4">
+        <div class="flex items-center gap-2 text-sm text-gray-700">
+          <svg class="w-4 h-4 text-sky-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          Entregas ilimitadas
+        </div>
+        <div class="flex items-center gap-2 text-sm text-gray-700">
+          <svg class="w-4 h-4 text-sky-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          Painel financeiro completo
+        </div>
+        <div class="flex items-center gap-2 text-sm text-gray-700">
+          <svg class="w-4 h-4 text-sky-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          Notificações WhatsApp
+        </div>
+        <div class="flex items-center gap-2 text-sm text-gray-700">
+          <svg class="w-4 h-4 text-sky-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          Suporte prioritário 24h
+        </div>
+      </div>
+      <button onclick="perfil_e_documentos_alterarPlano()"
+        class="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-3 rounded-xl transition-all active:scale-95 text-sm">
+        Alterar Plano
+      </button>
+    </div>
+
+    <!-- Estatísticas -->
+    <div class="card bg-white rounded-2xl p-5">
+      <h3 class="font-display font-semibold text-gray-900 text-sm mb-3">Resumo do Estabelecimento</h3>
+      <div class="grid grid-cols-3 gap-3">
+        <div class="text-center p-3 bg-gray-50 rounded-xl">
+          <p class="text-lg font-bold text-gray-900">847</p>
+          <p class="text-xs text-gray-500">Pedidos</p>
+        </div>
+        <div class="text-center p-3 bg-gray-50 rounded-xl">
+          <p class="text-lg font-bold text-gray-900">4.8</p>
+          <p class="text-xs text-gray-500">Avaliação</p>
+        </div>
+        <div class="text-center p-3 bg-gray-50 rounded-xl">
+          <p class="text-lg font-bold text-gray-900">R$12k</p>
+          <p class="text-xs text-gray-500">Faturamento</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ações da conta -->
+  <div class="px-5 mt-6 space-y-3">
+    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1">Conta</h3>
+    <button onclick="mostrarTela('home-do-motoboy')"
+      class="w-full flex items-center gap-3 px-4 py-3.5 bg-white rounded-xl text-left hover:bg-gray-50 transition-all active:scale-[0.98]">
+      <div class="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center flex-shrink-0">
+        <svg class="w-5 h-5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      </div>
+      <div class="flex-1">
+        <p class="font-semibold text-sm text-gray-900">Início</p>
+        <p class="text-xs text-gray-400">Voltar para a tela principal</p>
+      </div>
+      <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    </button>
+    <button onclick="perfil_e_documentos_abrirSuporte()"
+      class="w-full flex items-center gap-3 px-4 py-3.5 bg-white rounded-xl text-left hover:bg-gray-50 transition-all active:scale-[0.98]">
+      <div class="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center flex-shrink-0">
+        <svg class="w-5 h-5 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+      </div>
+      <div class="flex-1">
+        <p class="font-semibold text-sm text-gray-900">Suporte e FAQ</p>
+        <p class="text-xs text-gray-400">Central de ajuda e perguntas frequentes</p>
+      </div>
+      <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+
+  <!-- Espaço para scroll e rodapé -->
+  <div class="h-6"></div>
+
+  <script>
+    let perfil_e_documentos_editMode = false;
+    let perfil_e_documentos_tabAtiva = 'dados';
+    let perfil_e_documentos_perfil = 'motoboy';
+
+    function perfil_e_documentos_inicializar() {
+      const stored = localStorage.getItem('bluecircuit_perfil');
+      if (stored) {
+        perfil_e_documentos_perfil = stored;
+      }
+      perfil_e_documentos_adaptarPerfil();
+    }
+
+    function perfil_e_documentos_adaptarPerfil() {
+      const isMotoboy = perfil_e_documentos_perfil === 'motoboy';
+
+      document.getElementById('tab-veiculo').classList.toggle('hidden', !isMotoboy);
+      document.getElementById('painel-veiculo').classList.toggle('hidden', !isMotoboy);
+      document.getElementById('lista-documentos-motoboy').classList.toggle('hidden', !isMotoboy);
+
+      if (!isMotoboy) {
+        perfil_e_documentos_switchTab('dados');
+        document.getElementById('tab-veiculo').classList.add('hidden');
+      }
+
+      const avatarEl = document.getElementById('avatar-container');
+      if (isMotoboy) {
+        avatarEl.textContent = 'RC';
+        avatarEl.className = 'w-24 h-24 rounded-full bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-white font-display text-3xl font-bold shadow-lg shadow-sky-200';
+      } else {
+        avatarEl.textContent = 'EP';
+        avatarEl.className = 'w-24 h-24 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-display text-3xl font-bold shadow-lg shadow-orange-200';
+      }
+    }
+
+    function perfil_e_documentos_toggleEdit() {
+      perfil_e_documentos_editMode = !perfil_e_documentos_editMode;
+      const campos = document.querySelectorAll('[id^="campo-"]');
+      const label = document.getElementById('label-btn-editar');
+      const btn = document.getElementById('btn-editar-perfil');
+
+      campos.forEach(c => {
+        c.readOnly = !perfil_e_documentos_editMode;
+        c.classList.toggle('bg-gray-50', !perfil_e_documentos_editMode);
+        c.classList.toggle('bg-white', perfil_e_documentos_editMode);
+      });
+
+      if (perfil_e_documentos_editMode) {
+        label.textContent = 'Salvar';
+        btn.classList.add('bg-sky-500', 'text-white', 'border-sky-500');
+        btn.classList.remove('bg-white', 'text-gray-700', 'border-gray-200');
+      } else {
+        label.textContent = 'Editar';
+        btn.classList.remove('bg-sky-500', 'text-white', 'border-sky-500');
+        btn.classList.add('bg-white', 'text-gray-700', 'border-gray-200');
+        toast('Alterações salvas com sucesso', 'ok');
+      }
+    }
+
+    function perfil_e_documentos_switchTab(tab) {
+      perfil_e_documentos_tabAtiva = tab;
+      const tabs = ['dados', 'veiculo', 'docs'];
+      const paineis = {
+        dados: 'painel-dados',
+        veiculo: 'painel-veiculo',
+        docs: 'painel-docs'
+      };
+
+      tabs.forEach(t => {
+        const btn = document.getElementById('tab-' + t);
+        const painel = document.getElementById(paineis[t]);
+        if (t === tab) {
+          btn.classList.add('active', 'text-sky-600');
+          btn.classList.remove('text-gray-400');
+          painel.classList.remove('hidden');
+        } else {
+          btn.classList.remove('active', 'text-sky-600');
+          btn.classList.add('text-gray-400');
+          painel.classList.add('hidden');
+        }
+      });
+    }
+
+    function perfil_e_documentos_changeAvatar() {
+      const cores = [
+        'from-sky-400 to-sky-600', 'from-emerald-400 to-emerald-600',
+        'from-violet-400 to-violet-600', 'from-amber-400 to-orange-500',
+        'from-rose-400 to-rose-600', 'from-teal-400 to-teal-600'
+      ];
+      const ini = ['RC', 'EP', 'MC', 'AS', 'JL', 'FO'];
+      const idx = Math.floor(Math.random() * cores.length);
+      const avatarEl = document.getElementById('avatar-container');
+      avatarEl.textContent = ini[idx];
+      avatarEl.className = `w-24 h-24 rounded-full bg-gradient-to-br ${cores[idx]} flex items-center justify-center text-white font-display text-3xl font-bold shadow-lg`;
+      toast('Foto de perfil atualizada', 'ok');
+    }
+
+    function perfil_e_documentos_simularUpload() {
+      const overlay = document.createElement('div');
+      overlay.className = 'fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-5';
+      overlay.id = 'upload-overlay';
+      overlay.innerHTML = `
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm text-center">
+          <div class="w-16 h-16 rounded-full bg-sky-50 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-sky-500 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+          </div>
+          <p class="font-semibold text-gray-900 text-sm">Enviando documento...</p>
+          <p class="text-xs text-gray-400 mt-1">Aguarde um momento</p>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+
+      setTimeout(() => {
+        overlay.remove();
+        toast('Documento enviado! Aguardando aprovação.', 'ok');
+      }, 2000);
+    }
+
+    function perfil_e_documentos_reenviar(nome) {
+      perfil_e_documentos_simularUpload();
+    }
+
+    function perfil_e_documentos_alterarPlanos() {
+      perfil_e_documentos_alterarPlano();
+    }
+
+    function perfil_e_documentos_alterarPlano() {
+      const html = `
+        <div class="space-y-4">
+          <p class="text-sm text-gray-600 text-center">Escolha o plano ideal para o seu negócio:</p>
+          <div class="space-y-3">
+            <div onclick="perfil_e_documentos_selecionarPlano(this, 'basico')" class="border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-sky-400 transition-all">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="font-semibold text-sm text-gray-900">Plano Básico</p>
+                  <p class="text-xs text-gray-400">Até 100 entregas/mês</p>
+                </div>
+                <p class="font-bold text-sky-600">R$ 49/mês</p>
+              </div>
+            </div>
+            <div onclick="perfil_e_documentos_selecionarPlano(this, 'pro')" class="border-2 border-sky-400 rounded-xl p-4 cursor-pointer bg-sky-50/50">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="font-semibold text-sm text-gray-900">Plano Pro <span class="text-xs bg-sky-500 text-white px-2 py-0.5 rounded-full ml-1">Atual</span></p>
+                  <p class="text-xs text-gray-400">Entregas ilimitadas</p>
+                </div>
+                <p class="font-bold text-sky-600">R$ 99/mês</p>
+              </div>
+            </div>
+            <div onclick="perfil_e_documentos_selecionarPlano(this, 'enterprise')" class="border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-sky-400 transition-all">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="font-semibold text-sm text-gray-900">Enterprise</p>
+                  <p class="text-xs text-gray-400">API + suporte dedicado</p>
+                </div>
+                <p class="font-bold text-sky-600">R$ 249/mês</p>
+              </div>
+            </div>
+          </div>
+          <button onclick="perfil_e_documentos_confirmaPlano()"
+            class="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-3 rounded-xl transition-all active:scale-95 text-sm mt-2">
+            Confirmar Alteração
+          </button>
+        </div>
+      `;
+      abrirModal(html, 'Alterar Plano');
+    }
+
+    function perfil_e_documentos_selecionarPlano(el, plano) {
+      document.querySelectorAll('#modal-content .border-2').forEach(c => {
+        c.classList.remove('border-sky-400', 'bg-sky-50/50');
+        c.classList.add('border-gray-200');
+      });
+      el.classList.remove('border-gray-200');
+      el.classList.add('border-sky-400', 'bg-sky-50/50');
+      perfil_e_documentos_planoSelecionado = plano;
+    }
+
+    function perfil_e_documentos_confirmaPlano() {
+      if (!perfil_e_documentos_planoSelecionado) {
+        toast('Selecione um plano primeiro', 'erro');
+        return;
+      }
+      fecharModal();
+      toast('Plano alterado com sucesso!', 'ok');
+      perfil_e_documentos_planoSelecionado = null;
+    }
+
+    let perfil_e_documentos_planoSelecionado = null;
+
+    function perfil_e_documentos_abrirSuporte() {
+      const html = `
+        <div class="space-y-4">
+          <div class="space-y-3">
+            <button onclick="fecharModal(); mostrarTela('painel-admin')" class="w-full text-left p-4 bg-gray-50 rounded-xl hover:bg-sky-50 transition-all flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-sky-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+              </div>
+              <div>
+                <p class="font-semibold text-sm text-gray-900">Chat de Suporte</p>
+                <p class="text-xs text-gray-400">Converse com a equipe em tempo real</p>
+              </div>
+            </button>
+            <button onclick="perfil_e_documentos_abrirFAQ()" class="w-full text-left p-4 bg-gray-50 rounded-xl hover:bg-sky-50 transition-all flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+              <div>
+                <p class="font-semibold text-sm text-gray-900">Perguntas Frequentes</p>
+                <p class="text-xs text-gray-400">Respostas para dúvidas comuns</p>
+              </div>
+            </button>
+            <button onclick="fecharModal()" class="w-full text-left p-4 bg-gray-50 rounded-xl hover:bg-sky-50 transition-all flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-violet-100 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              </div>
+              <div>
+                <p class="font-semibold text-sm text-gray-900">E-mail</p>
+                <p class="text-xs text-gray-400">suporte@bluecircuit.com.br</p>
+              </div>
+            </button>
+          </div>
+        </div>
+      `;
+      abrirModal(html, 'Central de Ajuda');
+    }
+
+    function perfil_e_documentos_abrirFAQ() {
+      fecharModal();
+      setTimeout(() => {
+        const faqs = [
+          { q: 'Como funciona a taxa de entrega?', a: 'A taxa mínima é R$ 10,00 por corrida. O valor é definido pelo estabelecimento com base na distância.' },
+          { q: 'Quanto tempo para aprovar documentos?', a: 'Até 24 horas úteis. Você receberá uma notificação quando forem aprovados.' },
+          { q: 'Como sacar meus ganhos?', a: 'Acesse o menu "Meus Ganhos" e solicite a transferência para sua conta bancária.' },
+          { q: 'Posso recusar uma corrida?', a: 'Sim, mas é recomendado aceitar para manter sua taxa de aceitação alta.' },
+        ];
+        const html = `<div class="space-y-3 max-h-96 overflow-y-auto">
+          ${faqs.map(f => `
+            <div class="border border-gray-100 rounded-xl overflow-hidden">
+              <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full text-left p-4 flex items-center justify-between hover:bg-gray-50 transition-all">
+                <span class="font-semibold text-sm text-gray-900">${f.q}</span>
+                <svg class="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+              <div class="hidden px-4 pb-4">
+                <p class="text-sm text-gray-600 leading-relaxed">${f.a}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>`;
+        abrirModal(html, 'Perguntas Frequentes');
+      }, 300);
+    }
+
+    // Inicializar
+    perfil_e_documentos_inicializar();
+  </script>
+</section>
+
     <!-- TELAS -->';
       html += '</main>';
       html += '<nav class="flex items-center bg-white border-t border-cinza-100 flex-shrink-0 pb-[env(safe-area-inset-bottom)]">';
