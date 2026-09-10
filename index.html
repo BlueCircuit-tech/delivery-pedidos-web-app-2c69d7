@@ -2401,6 +2401,320 @@
       </div>
     </section>
 
+    <section data-tela="painel-financeiro" class="hidden">
+      <div class="px-4 pt-2 pb-6 space-y-5">
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-display text-xl font-bold text-gray-900">Painel Financeiro</h2>
+            <p class="text-xs text-gray-500 mt-0.5">Visão geral das suas finanças</p>
+          </div>
+          <button onclick="painel_financeiro_exportar()" class="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center active:scale-90 transition-transform shadow-sm">
+            <svg class="w-5 h-5 text-marca-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          </button>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="card p-3.5 space-y-2">
+            <div class="flex items-center gap-2 text-xs text-gray-500">
+              <div class="w-7 h-7 rounded-lg bg-marca-50 flex items-center justify-center">
+                <svg class="w-4 h-4 text-marca-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4v-4m10 4v-4"/></svg>
+              </div>
+              Assinatura
+            </div>
+            <p class="font-display text-lg font-bold text-gray-900">R$ 49,90</p>
+            <p class="text-[10px] text-gray-400">Vence em 12/07/2025</p>
+          </div>
+          <div class="card p-3.5 space-y-2">
+            <div class="flex items-center gap-2 text-xs text-gray-500">
+              <div class="w-7 h-7 rounded-lg bg-green-50 flex items-center justify-center">
+                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+              </div>
+              Taxas / mês
+            </div>
+            <p class="font-display text-lg font-bold text-gray-900">R$ 87,50</p>
+            <p class="text-[10px] text-green-600 font-medium">17 corridas × R$ 5,15</p>
+          </div>
+          <div class="card p-3.5 space-y-2">
+            <div class="flex items-center gap-2 text-xs text-gray-500">
+              <div class="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4"/></svg>
+              </div>
+              Corridas
+            </div>
+            <p class="font-display text-lg font-bold text-gray-900">142</p>
+            <p class="text-[10px] text-green-600 font-medium">+23 este mês</p>
+          </div>
+          <div class="card p-3.5 space-y-2">
+            <div class="flex items-center gap-2 text-xs text-gray-500">
+              <div class="w-7 h-7 rounded-lg bg-red-50 flex items-center justify-center">
+                <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+              Gasto total
+            </div>
+            <p class="font-display text-lg font-bold text-gray-900">R$ 3.240,50</p>
+            <p class="text-[10px] text-gray-400">Junho – Julho 2025</p>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="card p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-display text-sm font-bold text-gray-900">Gastos por semana</h3>
+            <select onchange="painel_financeiro_mudarPeriodo(this.value)" class="text-xs border border-gray-200 rounded-lg px-2 py-1 bg-gray-50 text-gray-600">
+              <option value="4s">Últimas 4 semanas</option>
+              <option value="12s">Últimos 3 meses</option>
+            </select>
+          </div>
+          <svg id="chart-gastos" viewBox="0 0 320 140" class="w-full h-auto">
+            <line x1="30" y1="10" x2="30" y2="120" stroke="#e5e7eb" stroke-width="1"/>
+            <line x1="30" y1="120" x2="310" y2="120" stroke="#e5e7eb" stroke-width="1"/>
+            <line x1="30" y1="90" x2="310" y2="90" stroke="#f3f4f6" stroke-width="1" stroke-dasharray="4 3"/>
+            <line x1="30" y1="60" x2="310" y2="60" stroke="#f3f4f6" stroke-width="1" stroke-dasharray="4 3"/>
+            <line x1="30" y1="30" x2="310" y2="30" stroke="#f3f4f6" stroke-width="1" stroke-dasharray="4 3"/>
+            <text x="6" y="14" fill="#9ca3af" font-size="8">R$600</text>
+            <text x="2" y="94" fill="#9ca3af" font-size="8">R$300</text>
+            <text x="14" y="124" fill="#9ca3af" font-size="8">0</text>
+            <rect x="42" y="35" width="28" height="85" rx="4" fill="#0ea5e9" opacity="0.85" class="chart-bar"/>
+            <rect x="110" y="48" width="28" height="72" rx="4" fill="#0ea5e9" opacity="0.85" class="chart-bar"/>
+            <rect x="178" y="25" width="28" height="95" rx="4" fill="#8b5cf6" opacity="0.85" class="chart-bar"/>
+            <rect x="246" y="40" width="28" height="80" rx="4" fill="#0ea5e9" opacity="0.85" class="chart-bar"/>
+            <text x="40" y="135" fill="#9ca3af" font-size="9" text-anchor="middle">Sem 1</text>
+            <text x="108" y="135" fill="#9ca3af" font-size="9" text-anchor="middle">Sem 2</text>
+            <text x="176" y="135" fill="#9ca3af" font-size="9" text-anchor="middle">Sem 3</text>
+            <text x="244" y="135" fill="#9ca3af" font-size="9" text-anchor="middle">Sem 4</text>
+          </svg>
+        </div>
+
+        <!-- Filters -->
+        <div class="flex gap-2">
+          <div class="flex-1 relative">
+            <svg class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input id="pf-busca" type="text" placeholder="Buscar transação..." oninput="painel_financeiro_buscar()" class="w-full pl-9 pr-3 py-2.5 text-xs border border-gray-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-marca-200 transition">
+          </div>
+          <select id="pf-filtro" onchange="painel_financeiro_buscar()" class="text-xs border border-gray-200 rounded-xl px-3 py-2.5 bg-white text-gray-600">
+            <option value="todos">Todos</option>
+            <option value="corrida">Corridas</option>
+            <option value="assinatura">Assinatura</option>
+          </select>
+        </div>
+
+        <!-- Transactions List -->
+        <div class="space-y-2" id="pf-lista">
+          <div class="transacao-item p-3.5 bg-white rounded-xl border border-gray-100 hover:border-marca-200 hover:shadow-sm transition cursor-pointer active:scale-[0.98]" onclick="painel_financeiro_detalhe(this)" data-tipo="corrida" data-desc="Corrida #1842 – Centro Comercial Iguatemi">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-marca-50 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-marca-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-gray-900 truncate">Corrida #1842 – Centro Iguatemi</p>
+                <p class="text-[11px] text-gray-400">Corrida • 15/07/2025 • 3.2 km</p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-sm font-bold text-gray-900">R$ 12,40</p>
+                <span class="badge badge-ok text-[10px]">Concluída</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="transacao-item p-3.5 bg-white rounded-xl border border-gray-100 hover:border-marca-200 hover:shadow-sm transition cursor-pointer active:scale-[0.98]" onclick="painel_financeiro_detalhe(this)" data-tipo="assinatura" data-desc="Assinatura mensal Plano Empresarial">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4v-4m10 4v-4"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-gray-900 truncate">Assinatura – Plano Empresarial</p>
+                <p class="text-[11px] text-gray-400">Assinatura • 15/06/2025 • Mensal</p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-sm font-bold text-gray-900">R$ 49,90</p>
+                <span class="badge badge-ok text-[10px]">Pago</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="transacao-item p-3.5 bg-white rounded-xl border border-gray-100 hover:border-marca-200 hover:shadow-sm transition cursor-pointer active:scale-[0.98]" onclick="painel_financeiro_detalhe(this)" data-tipo="corrida" data-desc="Corrida #1841 – Hospital Sírio-Libanês">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-marca-50 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-marca-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-gray-900 truncate">Corrida #1841 – Hospital Sírio-Libanês</p>
+                <p class="text-[11px] text-gray-400">Corrida • 14/07/2025 • 5.8 km</p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-sm font-bold text-gray-900">R$ 18,90</p>
+                <span class="badge badge-ok text-[10px]">Concluída</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="transacao-item p-3.5 bg-white rounded-xl border border-gray-100 hover:border-marca-200 hover:shadow-sm transition cursor-pointer active:scale-[0.98]" onclick="painel_financeiro_detalhe(this)" data-tipo="corrida" data-desc="Corrida #1840 – Restaurante Figueira Rubaiya">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-marca-50 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-marca-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-gray-900 truncate">Corrida #1840 – Figueira Rubaiya</p>
+                <p class="text-[11px] text-gray-400">Corrida • 14/07/2025 • 1.5 km</p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-sm font-bold text-gray-900">R$ 8,50</p>
+                <span class="badge badge-ok text-[10px]">Concluída</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="transacao-item p-3.5 bg-white rounded-xl border border-gray-100 hover:border-marca-200 hover:shadow-sm transition cursor-pointer active:scale-[0.98]" onclick="painel_financeiro_detalhe(this)" data-tipo="assinatura" data-desc="Taxa de plataforma 05/07">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4v-4m10 4v-4"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-gray-900 truncate">Taxa de plataforma – 14 corridas</p>
+                <p class="text-[11px] text-gray-400">Taxa • 05/07/2025 • R$ 5,15 cada</p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-sm font-bold text-gray-900">R$ 72,10</p>
+                <span class="badge badge-warn text-[10px]">Pendente</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="transacao-item p-3.5 bg-white rounded-xl border border-gray-100 hover:border-marca-200 hover:shadow-sm transition cursor-pointer active:scale-[0.98]" onclick="painel_financeiro_detalhe(this)" data-tipo="corrida" data-desc="Corrida #1839 – Mercado Pão de Açúcar">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-marca-50 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-marca-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-gray-900 truncate">Corrida #1839 – Pão de Açúcar</p>
+                <p class="text-[11px] text-gray-400">Corrida • 13/07/2025 • 2.7 km</p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-sm font-bold text-gray-900">R$ 11,00</p>
+                <span class="badge badge-ok text-[10px]">Concluída</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="transacao-item p-3.5 bg-white rounded-xl border border-gray-100 hover:border-marca-200 hover:shadow-sm transition cursor-pointer active:scale-[0.98]" onclick="painel_financeiro_detalhe(this)" data-tipo="corrida" data-desc="Corrida #1838 – Farmácia DrogaRaia">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-marca-50 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-marca-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-gray-900 truncate">Corrida #1838 – DrogaRaia</p>
+                <p class="text-[11px] text-gray-400">Corrida • 13/07/2025 • 1.1 km</p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-sm font-bold text-gray-900">R$ 7,80</p>
+                <span class="badge badge-ok text-[10px]">Concluída</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="transacao-item p-3.5 bg-white rounded-xl border border-gray-100 hover:border-marca-200 hover:shadow-sm transition cursor-pointer active:scale-[0.98]" onclick="painel_financeiro_detalhe(this)" data-tipo="corrida" data-desc="Corrida #1837 – Academia SmartFit">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-marca-50 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-marca-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-semibold text-gray-900 truncate">Corrida #1837 – SmartFit</p>
+                <p class="text-[11px] text-gray-400">Corrida • 12/07/2025 • 4.3 km</p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-sm font-bold text-gray-900">R$ 15,60</p>
+                <span class="badge badge-ok text-[10px]">Concluída</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div id="pf-vazio" class="hidden text-center py-8 space-y-2">
+          <div class="w-14 h-14 rounded-full bg-gray-100 mx-auto flex items-center justify-center">
+            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <p class="text-sm text-gray-500 font-medium">Nenhuma transação encontrada</p>
+          <p class="text-xs text-gray-400">Tente ajustar os filtros de busca</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="space-y-2.5 pt-2">
+          <button onclick="painel_financeiro_exportar()" class="btn btn-primary w-full flex items-center justify-center gap-2 py-3">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            Exportar Relatório PDF
+          </button>
+          <div class="grid grid-cols-2 gap-2.5">
+            <button onclick="painel_financeiro_assinatura()" class="btn btn-outline flex items-center justify-center gap-1.5 py-2.5 text-xs">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              Gerenciar Assinatura
+            </button>
+            <button onclick="painel_financeiro_pagamento()" class="btn btn-outline flex items-center justify-center gap-1.5 py-2.5 text-xs">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4v-4m10 4v-4"/></svg>
+              Atualizar Pagamento
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      const pf_icones = { corrida: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>', assinatura: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4v-4m10 4v-4"/></svg>' };
+      const pf_cores = { corrida: 'bg-marca-50 text-marca-600', assinatura: 'bg-purple-50 text-purple-600' };
+      const pf_detalhes = {
+        'Corrida #1842 – Centro Iguatemi': { id: '#1842', data: '15/07/2025', km: '3.2 km', tempo: '12 min', origem: 'R. Oscar Freire, 1500 – Jardins', destino: 'Av. Brigadeiro Faria Lima, 2232 – Jardim Paulistano', motoboy: 'Carlos M.', valor: '12,40', status: 'Concluída', pix: 'Corrida entregue e confirmada' },
+        'Assinatura – Plano Empresarial': { id: '#AS-001', data: '15/06/2025', plano: 'Empresarial Pro', ciclos: '12 ciclos pagos', metodo: 'Cartão •••• 4582', vigencia: 'Até 15/07/2025', valor: '49,90', status: 'Pago', pix: 'Assinatura ativa e renovada automaticamente' },
+        'Corrida #1841 – Hospital Sírio-Libanês': { id: '#1841', data: '14/07/2025', km: '5.8 km', tempo: '22 min', origem: 'R. Barão de Capanema, 400 – Cerqueira César', destino: 'R. D. Adma Jafet, 115 – Bela Vista', motoboy: 'Fernanda R.', valor: '18,90', status: 'Concluída', pix: 'Corrida entregue e confirmada' },
+        'Corrida #1840 – Figueira Rubaiya': { id: '#1840', data: '14/07/2025', km: '1.5 km', tempo: '8 min', origem: 'R. Haddock Lobo, 1627 – Cerqueira César', destino: 'R. Bela Cintra, 2150 – Consolação', motoboy: 'Lucas P.', valor: '8,50', status: 'Concluída', pix: 'Corrida entregue e confirmada' },
+        'Taxa de plataforma – 14 corridas': { id: '#TX-014', data: '05/07/2025', descricao: 'Taxa por corrida • 14 entregas no período', taxaUnit: 'R$ 5,15', total: '14 × R$ 5,15 = R$ 72,10', vencimento: '10/07/2025', metodo: 'Cartão •••• 4582', valor: '72,10', status: 'Pendente', pix: 'Fatura gerada – vencimento em 10/07' },
+        'Corrida #1839 – Pão de Açúcar': { id: '#1839', data: '13/07/2025', km: '2.7 km', tempo: '10 min', origem: 'Al. Lorena, 1100 – Jardim Paulista', destino: 'R. Estados Unidos, 450 – Jardim América', motoboy: 'Carlos M.', valor: '11,00', status: 'Concluída', pix: 'Corrida entregue e confirmada' },
+        'Corrida #1838 – DrogaRaia': { id: '#1838', data: '13/07/2025', km: '1.1 km', tempo: '6 min', origem: 'R. Augusta, 800 – Consolação', destino: 'R. Oscar Freire, 260 – Jardins', motoboy: 'Fernanda R.', valor: '7,80', status: 'Concluída', pix: 'Corrida entregue e confirmada' },
+        'Corrida #1837 – SmartFit': { id: '#1837', data: '12/07/2025', km: '4.3 km', tempo: '16 min', origem: 'Av. Rebouças, 3100 – Pinheiros', destino: 'R. Card. Arcoverde, 123 – Pinheiros', motoboy: 'Lucas P.', valor: '15,60', status: 'Concluída', pix: 'Corrida entregue e confirmada' }
+      };
+      function painel_financeiro_buscar() {
+        const q = document.getElementById('pf-busca').value.toLowerCase().trim();
+        const f = document.getElementById('pf-filtro').value;
+        let vazio = true;
+        document.querySelectorAll('.transacao-item').forEach(el => {
+          const texto = (el.dataset.desc + ' ' + el.textContent).toLowerCase();
+          const tipoOK = f === 'todos' || el.dataset.tipo === f;
+          const match = !q || texto.includes(q);
+          el.classList.toggle('hidden', !(tipoOK && match));
+          if (tipoOK && match) vazio = false;
+        });
+        document.getElementById('pf-vazio').classList.toggle('hidden', !vazio);
+        document.getElementById('pf-lista').classList.toggle('hidden', vazio);
+      }
+      function painel_financeiro_detalhe(el) {
+        const nome = el.querySelector('.truncate').textContent.trim();
+        const d = pf_detalhes[nome];
+        if (!d) return;
+        let rows = '';
+        if (d.km) { rows += '<tr><td class="text-xs text-gray-500 py-1">Distância</td><td class="text-xs font-semibold text-right">' + d.km + '</td></tr>'; }
+        if (d.tempo) { rows += '<tr><td class="text-xs text-gray-500 py-1">Tempo estimado</td><td class="text-xs font-semibold text-right">' + d.tempo + '</td></tr>'; }
+        if (d.origem) { rows += '<tr><td class="text-xs text-gray-500 py-1">Origem</td><td class="text-xs font-semibold text-right">' + d.origem + '</td></tr>'; }
+        if (d.destino) { rows += '<tr><td class="text-xs text-gray-500 py-1">Destino</td><td class="text-xs font-semibold text-right">' + d.destino + '</td></tr>'; }
+        if (d.motoboy) { rows += '<tr><td class="text-xs text-gray-500 py-1">Motoboy</td><td class="text-xs font-semibold text-right">' + d.motoboy + '</td></tr>'; }
+        if (d.plano) { rows += '<tr><td class="text-xs text-gray-500 py-1">Plano</td><td class="text-xs font-semibold text-right">' + d.plano + '</td></tr>'; }
+        if (d.ciclos) { rows += '<tr><td class="text-xs text-gray-500 py-1">Ciclos pagos</td><td class="text-xs font-semibold text-right">' + d.ciclos + '</td></tr>'; }
+        if (d.descricao) { rows += '<tr><td class="text-xs text-gray-500 py-1">Descrição</td><td class="text-xs font-semibold text-right">' + d.descricao + '</td></tr>'; }
+        if (d.taxaUnit) { rows += '<tr><td class="text-xs text-gray-500 py-1">Taxa unitária</td><td class="text-xs font-semibold text-right">' + d.taxaUnit + '</td></tr>'; }
+        if (d.total) { rows += '<tr><td class="text-xs text-gray-500 py-1">Total</td><td class="text-xs font-semibold text-right">' + d.total + '</td></tr>'; }
+        if (d.metodo) { rows += '<tr><td class="text-xs text-gray-500 py-1">Pagamento</td><td class="text-xs font-semibold text-right">' + d.metodo + '</td></tr>'; }
+        if (d.vigencia) { rows += '<tr><td class="text-xs text-gray-500 py-1">Vigência</td><td class="text-xs font-semibold text-right">' + d.vigencia + '</td></tr>'; }
+        if (d.vencimento) { rows += '<tr><td class="text-xs text-gray-500 py-1">Vencimento</td><td class="text-xs font-semibold text-right">' + d.vencimento + '</td></tr>'; }
+        rows += '<tr class="border-t"><td class="text-xs text-gray-500 pt-1">Status</td><td class="text-xs font-bold pt-1 text-right">' + d.status + '</td></tr>';
+        abrirModal('<div class="space-y-3"><div class="flex items-center gap-3 pb-3 border-b"><div class="w-10 h-10 rounded-xl ' + pf_cores[el.dataset.tipo] + ' flex items-center justify-center">' + pf_icones[el.dataset.tipo] + '</div><div><p class="font-display font-bold text-gray-900">' + nome + '</p><p class="text-xs text-gray-400">ID ' + d.id + ' • ' + d.data + '</p></div></div><table class="w-full">' + rows + '</table><div class="flex gap-2 pt-3"><button onclick="painel_financeiro_comprovante(); fecharModal();" class="btn btn-outline flex-1 text-xs py-2.5"><svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg> Baixar Comprovante</button></div></div>', 'Detalhe da Transação');
+      }
+      function painel_financeiro_comprovante() { toast('Comprovante gerado! Verifique seus downloads.', 'ok'); }
+      function painel_financeiro_exportar() { toast('Relatório PDF exportado com sucesso!', 'ok'); }
+      function painel_financeiro_assinatura() { abrirModal('<div class="space-y-4"><p class="text-sm text-gray-600">Plano atual: <strong>Empresarial Pro</strong></p><div class="bg-marca-50 rounded-xl p-4 border border-marca-100"><p class="font-display text-2xl font-bold text-marca-700">R$ 49,90<span class="text-sm font-normal text-marca-500">/mês</span></p><ul class="mt-2 space-y-1.5 text-xs text-gray-600"><li class="flex gap-1.5"><svg class="w-4 h-4 text-marca-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Corridas ilimitadas</li><li class="flex gap-1.5"><svg class="w-4 h-4 text-marca-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Suporte prioritário</li><li class="flex gap-1.5"><svg class="w-4 h-4 text-marca-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Gestão de múltiplos entregadores</li></ul></div><div class="space-y-2"><p class="text-xs font-semibold text-gray-700">Outros planos</p><div class="flex gap-2"><button onclick="toast(\'Alteração de plano enviada!\', \'info\'); fecharModal();" class="flex-1 card p-3 text-center active:scale-95 transition"><p class="font-display font-bold text-sm">Básico</p><p class="text-xs text-gray-400">R$ 29,90/mês</p></button><button class="flex-1 card p-3 text-center border-2 border-marca-200"><p class="font-display font-bold text-sm text-marca-700">Pro</p><p class="text-xs text-marca-500">R$ 49,90/mês</p></button></div></div><button onclick="fecharModal();" class="btn btn-primary w-full">Fechar</button></div>', 'Gerenciar Assinatura'); }
+      function painel_financeiro_pagamento() { abrirModal('<div class="space-y-4"><p class="text-sm text-gray-600">Cartão atual final <strong>4582</strong> • Visa • Expira 08/27</p><div class="space-y-3"><div><label class="text-xs font-semibold text-gray-700 block mb-1">Número do cartão</label><input type="text" value="•••• •••• •••• 4582" class="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50" readonly></div><div class="grid grid-cols-2 gap-2"><div><label class="text-xs font-semibold text-gray-700 block mb-1">Validade</label><input type="text" value="08/2027" class="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50" readonly></div><div><label class="text-xs font-semibold text-gray-700 block mb-1">CVV</label><input type="password" value="•••" class="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 bg-gray-50" readonly></div></div></div><div class="flex gap-2"><button onclick="toast(\'Pagamento atualizado!\', \'ok\'); fecharModal();" class="btn btn-primary flex-1">Salvar Alterações</button><button onclick="fecharModal();" class="btn btn-outline flex-1">Cancelar</button></div></div>', 'Atualizar Dados de Pagamento'); }
+      function painel_financeiro_mudarPeriodo(v) { toast(v === '12s' ? 'Exibindo últimos 3 meses' : 'Exibindo últimas 4 semanas', 'info'); }
+    </script>
+
     <!-- TELAS -->';
       html += '</main>';
       html += '<nav class="flex items-center bg-white border-t border-cinza-100 flex-shrink-0 pb-[env(safe-area-inset-bottom)]">';
