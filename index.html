@@ -1184,6 +1184,192 @@
       </script>
     </section>
 
+    <section data-tela="cadastro-estabelecimento" class="hidden animate-fadeIn">
+  <div class="max-w-7xl mx-auto pt-12 pb-8 px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col gap-6">
+      <div>
+        <h1 class="font-display text-2xl sm:text-3xl font-bold text-marca-900 flex items-center gap-2">
+          Cadastro de Estabelecimento
+        </h1>
+        <p class="font-body text-base text-marca-700 mt-1">Faça seu cadastro para solicitar entregas via motoboy. Apenas empresas podem se cadastrar. <span class="badge bg-marca-100 text-marca-800 ml-2">Painel exclusivo</span></p>
+      </div>
+      <form id="cadastro_estabelecimento_form" onsubmit="return cadastro_estabelecimento_submit(event)" autocomplete="off" class="bg-white card p-0 sm:p-6 rounded-lg shadow-lg transition-all">
+        <div class="flex flex-col lg:flex-row gap-6">
+          <!-- Dados da empresa -->
+          <div class="flex-1 min-w-0">
+            <h2 class="font-display text-lg text-marca-800 mb-4">Dados do estabelecimento</h2>
+            <div class="flex flex-col gap-4">
+              <!-- Razão Social -->
+              <div>
+                <label for="cadastro_estabelecimento_razao" class="block font-body font-medium text-marca-700 mb-1">Razão Social*</label>
+                <input type="text" id="cadastro_estabelecimento_razao" name="razao" class="input w-full bg-marca-50 focus:bg-white border marca border-marca-200 rounded-lg px-4 py-3 font-body font-medium text-marca-900 focus:outline-none focus:ring-2 focus:ring-marca-400 transition" maxlength="70" required oninput="cadastro_estabelecimento_validate_field('razao')">
+                <div id="cadastro_estabelecimento_erro_razao" class="text-sm mt-1"></div>
+              </div>
+              <!-- CNPJ -->
+              <div>
+                <label for="cadastro_estabelecimento_cnpj" class="block font-body font-medium text-marca-700 mb-1">CNPJ*</label>
+                <div class="relative flex items-center">
+                  <input type="text" id="cadastro_estabelecimento_cnpj" name="cnpj" class="input w-full bg-marca-50 border marca border-marca-200 rounded-lg px-4 py-3 font-body font-medium text-marca-900 pr-14 focus:outline-none focus:bg-white focus:ring-2 focus:ring-marca-400 transition" maxlength="18" required oninput="cadastro_estabelecimento_mask_cnpj(this);cadastro_estabelecimento_validate_field('cnpj')">
+                  <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 text-marca-600 hover:text-marca-900 transition" style="height:32px" onclick="cadastro_estabelecimento_validar_cnpj()">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6l-8 8.1-4-4.1"></path></svg>
+                  </button>
+                </div>
+                <div id="cadastro_estabelecimento_erro_cnpj" class="text-sm mt-1"></div>
+              </div>
+              <!-- Endereço -->
+              <div>
+                <label for="cadastro_estabelecimento_endereco" class="block font-body font-medium text-marca-700 mb-1">Endereço*</label>
+                <div class="relative flex items-center gap-2">
+                  <input type="text" id="cadastro_estabelecimento_endereco" name="endereco" class="input w-full bg-marca-50 border marca border-marca-200 rounded-lg px-4 py-3 font-body font-medium text-marca-900 pr-14 focus:outline-none focus:bg-white focus:ring-2 focus:ring-marca-400 transition" maxlength="80" required oninput="cadastro_estabelecimento_validate_field('endereco')">
+                  <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 text-marca-600 hover:text-marca-900 transition" style="height:32px" onclick="cadastro_estabelecimento_buscar_endereco()">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="7"/><path d="M14 14l4 4"></path></svg>
+                  </button>
+                </div>
+                <div id="cadastro_estabelecimento_erro_endereco" class="text-sm mt-1"></div>
+                <div id="cadastro_estabelecimento_endereco_sugestoes" class="mt-2"></div>
+              </div>
+              <!-- Telefone -->
+              <div>
+                <label for="cadastro_estabelecimento_telefone" class="block font-body font-medium text-marca-700 mb-1">Telefone comercial*</label>
+                <input type="text" id="cadastro_estabelecimento_telefone" name="telefone" class="input w-full bg-marca-50 border marca border-marca-200 rounded-lg px-4 py-3 font-body font-medium text-marca-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-marca-400 transition" maxlength="15" required oninput="cadastro_estabelecimento_mask_telefone(this);cadastro_estabelecimento_validate_field('telefone')">
+                <div id="cadastro_estabelecimento_erro_telefone" class="text-sm mt-1"></div>
+              </div>
+              <!-- E-mail -->
+              <div>
+                <label for="cadastro_estabelecimento_email" class="block font-body font-medium text-marca-700 mb-1">E-mail comercial*</label>
+                <input type="email" id="cadastro_estabelecimento_email" name="email" class="input w-full bg-marca-50 border marca border-marca-200 rounded-lg px-4 py-3 font-body font-medium text-marca-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-marca-400 transition" maxlength="60" required oninput="cadastro_estabelecimento_validate_field('email')">
+                <div id="cadastro_estabelecimento_erro_email" class="text-sm mt-1"></div>
+              </div>
+              <!-- Foto fachada -->
+              <div>
+                <label class="block font-body font-medium text-marca-700 mb-1">Foto da fachada (opcional)</label>
+                <div class="flex items-center gap-4">
+                  <div id="cadastro_estabelecimento_foto_preview" class="w-16 h-16 rounded-xl bg-gradient-to-br from-marca-50 to-marca-100 flex items-center justify-center text-marca-400 text-2xl font-display border border-marca-200">
+                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="12" width="16" height="12" rx="3"/><circle cx="16" cy="18" r="3"/><path d="M10 14l1-4h10l1 4"/></svg>
+                  </div>
+                  <input type="file" accept="image/*" class="hidden" id="cadastro_estabelecimento_foto_input" onchange="cadastro_estabelecimento_foto_upload(event)">
+                  <button type="button" class="btn bg-marca-600 text-white hover:bg-marca-700 font-body font-semibold px-4 py-2 rounded-lg transition active:scale-95" onclick="document.getElementById('cadastro_estabelecimento_foto_input').click()">
+                    Selecionar foto
+                  </button>
+                  <button type="button" class="btn bg-marca-100 text-marca-700 hover:bg-marca-200 font-body px-2 py-2 rounded-lg transition active:scale-95" onclick="cadastro_estabelecimento_foto_remover()" id="cadastro_estabelecimento_foto_remover_btn" style="display:none">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="inline"><path d="M6 6l8 8M14 6l-8 8"></path></svg>
+                  </button>
+                </div>
+                <div id="cadastro_estabelecimento_erro_foto" class="text-sm mt-1"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Dados do responsável -->
+          <div class="flex-1 min-w-0">
+            <h2 class="font-display text-lg text-marca-800 mb-4">Responsável pelo cadastro</h2>
+            <div class="flex flex-col gap-4">
+              <!-- Nome completo -->
+              <div>
+                <label for="cadastro_estabelecimento_responsavel" class="block font-body font-medium text-marca-700 mb-1">Nome completo*</label>
+                <input type="text" id="cadastro_estabelecimento_responsavel" name="responsavel" class="input w-full bg-marca-50 border marca border-marca-200 rounded-lg px-4 py-3 font-body font-medium text-marca-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-marca-400 transition" maxlength="60" required oninput="cadastro_estabelecimento_validate_field('responsavel')">
+                <div id="cadastro_estabelecimento_erro_responsavel" class="text-sm mt-1"></div>
+              </div>
+              <!-- CPF -->
+              <div>
+                <label for="cadastro_estabelecimento_cpf" class="block font-body font-medium text-marca-700 mb-1">CPF*</label>
+                <input type="text" id="cadastro_estabelecimento_cpf" name="cpf" class="input w-full bg-marca-50 border marca border-marca-200 rounded-lg px-4 py-3 font-body font-medium text-marca-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-marca-400 transition" maxlength="14" required oninput="cadastro_estabelecimento_mask_cpf(this);cadastro_estabelecimento_validate_field('cpf')">
+                <div id="cadastro_estabelecimento_erro_cpf" class="text-sm mt-1"></div>
+              </div>
+              <!-- Celular -->
+              <div>
+                <label for="cadastro_estabelecimento_celular" class="block font-body font-medium text-marca-700 mb-1">Celular com WhatsApp*</label>
+                <div class="relative flex items-center">
+                  <input type="text" id="cadastro_estabelecimento_celular" name="celular" class="input w-full bg-marca-50 border marca border-marca-200 rounded-lg px-4 py-3 font-body font-medium text-marca-900 pr-14 focus:outline-none focus:bg-white focus:ring-2 focus:ring-marca-400 transition" maxlength="15" required oninput="cadastro_estabelecimento_mask_telefone(this);cadastro_estabelecimento_validate_field('celular')">
+                  <span class="absolute right-2 top-1/2 -translate-y-1/2 text-green-500">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="8"/><path d="M11 12c-1-.5-2-1.5-2.5-3"/><path d="M7 7c1 0 1.5.5 2 .5"/><path d="M13 13c-1 .5-1.5 0-2 0"/></svg>
+                  </span>
+                </div>
+                <div id="cadastro_estabelecimento_erro_celular" class="text-sm mt-1"></div>
+              </div>
+              <!-- Senha -->
+              <div>
+                <label for="cadastro_estabelecimento_senha" class="block font-body font-medium text-marca-700 mb-1">Senha de acesso*</label>
+                <div class="flex items-center gap-2">
+                  <input type="password" id="cadastro_estabelecimento_senha" name="senha" class="input w-full bg-marca-50 border marca border-marca-200 rounded-lg px-4 py-3 font-body font-medium text-marca-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-marca-400 transition" maxlength="32" required oninput="cadastro_estabelecimento_validate_field('senha');cadastro_estabelecimento_calcular_forca_senha(this.value)">
+                  <div id="cadastro_estabelecimento_forca_senha" class="flex items-center gap-1 text-xs font-body"></div>
+                </div>
+                <div id="cadastro_estabelecimento_erro_senha" class="text-sm mt-1"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Código de indicação -->
+        <div class="mt-6 flex flex-col sm:flex-row items-center gap-4">
+          <div class="flex-1">
+            <label for="cadastro_estabelecimento_codigo" class="block font-body font-medium text-marca-700 mb-1">Código de indicação</label>
+            <input type="text" id="cadastro_estabelecimento_codigo" name="codigo_indicacao" class="input w-full bg-marca-50 border marca border-marca-200 rounded-lg px-4 py-3 font-body font-medium text-marca-900 focus:outline-none focus:bg-white focus:ring-2 focus:ring-marca-400 transition" maxlength="12" oninput="cadastro_estabelecimento_validate_field('codigo')">
+          </div>
+          <button type="submit" id="cadastro_estabelecimento_submit_btn" class="btn bg-marca-700 text-white hover:bg-marca-900 font-body font-semibold px-10 py-3 rounded-lg text-lg transition shadow active:scale-95 mt-4 sm:mt-0" style="min-height:48px">
+            Cadastrar
+          </button>
+        </div>
+      </form>
+      <!-- Rodapé -->
+      <div class="flex justify-center items-center">
+        <span class="font-body text-marca-700 text-base">Já tenho conta:</span>
+        <button type="button" onclick="mostrarTela('painel-do-lojista')" class="font-body text-marca-900 ml-2 underline hover:text-marca-700 transition">Entrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Boas-vindas após envio bem-sucedido -->
+  <div id="cadastro_estabelecimento_welcome" class="hidden max-w-2xl mx-auto pt-16 pb-20 px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center fadeIn">
+    <div class="bg-white card rounded-xl p-8 shadow-lg w-full">
+      <div class="flex flex-col items-center">
+        <div class="badge bg-marca-100 text-marca-700 mb-3">Cadastro realizado!</div>
+        <span class="block text-2xl font-display text-marca-900 mb-2">Bem-vindo ao BlueCircuit Entregas</span>
+        <p class="font-body text-base text-marca-700 max-w-md mx-auto mb-5">Seu estabelecimento está pronto para solicitar motoboys. Você receberá uma mensagem via WhatsApp para ativar a conta.</p>
+        <button type="button" class="btn bg-marca-700 hover:bg-marca-900 text-white font-body font-semibold text-lg px-10 py-3 rounded-lg shadow transition active:scale-95 mt-3" onclick="mostrarTela('solicitar-corrida')">
+          Solicitar primeira corrida
+        </button>
+        <div class="mt-4">
+          <button type="button" class="btn bg-marca-100 text-marca-700 hover:bg-marca-200 px-4 py-2 rounded-lg active:scale-95 font-body" onclick="mostrarTela('painel-do-lojista')">
+            Acessar painel do lojista
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Máscaras rápidas (visual)
+    function cadastro_estabelecimento_mask_cnpj(el) {
+      let v = el.value.replace(/\D/g, '');
+      v = v.replace(/^(\d{2})(\d)/, '$1.$2')
+           .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+           .replace(/\.(\d{3})(\d)/, '.$1/$2')
+           .replace(/(\d{4})(\d)/, '$1-$2');
+      el.value = v.slice(0, 18);
+    }
+    function cadastro_estabelecimento_mask_cpf(el) {
+      let v = el.value.replace(/\D/g, '');
+      v = v.replace(/^(\d{3})(\d)/, '$1.$2')
+           .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
+           .replace(/\.(\d{3})(\d)/, '.$1-$2');
+      el.value = v.slice(0, 14);
+    }
+    function cadastro_estabelecimento_mask_telefone(el) {
+      let v = el.value.replace(/\D/g, '');
+      if (v.length > 10) {
+        v = v.replace(/^(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+      } else {
+        v = v.replace(/^(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+      }
+      el.value = v.slice(0, 15);
+    }
+
+    // Validação básica dos campos
+    function cadastro_estabelecimento_validate_field(tipo) {
+      let val = '';
+      let erro = '';
+      let green = 'text-green-600 font-semibold';
+      let red = 'text-red-600
+
     <!-- TELAS -->
   </main>
 
