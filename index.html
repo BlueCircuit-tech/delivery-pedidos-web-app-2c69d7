@@ -2449,6 +2449,319 @@
       </script>
     </section>
 
+    <section data-tela="historico-de-entregas" class="hidden">
+  <style>
+    .hist-star{cursor:pointer;transition:transform .15s}.hist-star:hover{transform:scale(1.2)}
+    .hist-card{transition:transform .2s,box-shadow .2s}
+    .hist-card:hover{transform:translateY(-2px);box-shadow:0 8px 25px -5px rgba(0,0,0,.1)}
+    .hist-filter-pill{transition:all .2s}.hist-filter-pill:hover{transform:translateY(-1px)}
+    .hist-indicator{animation:histFadeUp .4s ease forwards;opacity:0}
+    @keyframes histFadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .hist-bar-fill{transition:height .6s cubic-bezier(.4,0,.2,1)}
+  </style>
+
+  <!-- CABEÇALHO DA TELA -->
+  <div class="mb-6">
+    <h1 class="font-display text-2xl lg:text-3xl font-bold text-gray-900">Histórico de Entregas</h1>
+    <p class="mt-1 text-gray-500 text-sm lg:text-base">Acompanhe todas as suas corridas, gastos e avaliações</p>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="card p-4 lg:p-5 mb-5">
+    <div class="flex flex-col sm:flex-row gap-3">
+      <div class="flex gap-1 flex-wrap">
+        <button onclick="historico_de_entregas_setPeriodo('hoje')" id="filt-periodo-hoje" class="hist-filter-pill px-4 py-2 rounded-lg text-sm font-medium bg-marca-600 text-white">Hoje</button>
+        <button onclick="historico_de_entregas_setPeriodo('semana')" id="filt-periodo-semana" class="hist-filter-pill px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200">Semana</button>
+        <button onclick="historico_de_entregas_setPeriodo('mes')" id="filt-periodo-mes" class="hist-filter-pill px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200">Mês</button>
+      </div>
+      <div class="h-px sm:h-8 sm:w-px bg-gray-200 hidden sm:block"></div>
+      <div class="flex gap-1 flex-wrap">
+        <button onclick="historico_de_entregas_setStatus('todas')" id="filt-status-todas" class="hist-filter-pill px-4 py-2 rounded-lg text-sm font-medium bg-marca-600 text-white">Todas</button>
+        <button onclick="historico_de_entregas_setStatus('entregues')" id="filt-status-entregues" class="hist-filter-pill px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200">Entregues</button>
+        <button onclick="historico_de_entregas_setStatus('canceladas')" id="filt-status-canceladas" class="hist-filter-pill px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200">Canceladas</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INDICADORES FINANCEIROS -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-5">
+    <div class="card p-4 hist-indicator" style="animation-delay:.05s">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-marca-50 flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5 text-marca-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs text-gray-500 font-medium">Total Gasto</p>
+          <p class="font-display font-bold text-lg text-gray-900" id="hist-total-gasto">R$ 1.230,40</p>
+        </div>
+      </div>
+    </div>
+    <div class="card p-4 hist-indicator" style="animation-delay:.1s">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs text-gray-500 font-medium">Corridas</p>
+          <p class="font-display font-bold text-lg text-gray-900" id="hist-corridas">14</p>
+        </div>
+      </div>
+    </div>
+    <div class="card p-4 hist-indicator" style="animation-delay:.15s">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs text-gray-500 font-medium">Média / Corrida</p>
+          <p class="font-display font-bold text-lg text-gray-900" id="hist-media">R$ 87,89</p>
+        </div>
+      </div>
+    </div>
+    <div class="card p-4 hist-indicator" style="animation-delay:.2s">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs text-gray-500 font-medium">Taxas Pagas</p>
+          <p class="font-display font-bold text-lg text-gray-900" id="hist-taxas">R$ 140,00</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRÁFICO DE GASTOS -->
+  <div class="card p-4 lg:p-5 mb-5">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-display font-semibold text-gray-800 text-sm lg:text-base">Gastos por Dia</h3>
+      <span class="text-xs text-gray-400">Últimos 14 dias</span>
+    </div>
+    <div class="relative" style="height:160px">
+      <svg id="hist-grafico" viewBox="0 0 700 160" class="w-full h-full" preserveAspectRatio="none"></svg>
+    </div>
+  </div>
+
+  <!-- RESULTADOS -->
+  <div class="flex items-center justify-between mb-3">
+    <p class="text-sm text-gray-500"><span id="hist-contador">14</span> corridas encontradas</p>
+  </div>
+
+  <div id="hist-lista-vazia" class="hidden text-center py-12">
+    <svg class="w-16 h-16 text-gray-300 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+    <p class="text-gray-400 text-sm">Nenhuma corrida encontrada</p>
+    <p class="text-gray-300 text-xs mt-1">Tente ajustar os filtros</p>
+  </div>
+
+  <div id="hist-lista" class="space-y-3"></div>
+
+  <!-- MODAL AVALIAÇÃO -->
+  <div id="hist-modal-avaliacao" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/40" onclick="historico_de_entregas_fecharAvaliacao()"></div>
+    <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
+      <h3 class="font-display font-bold text-lg text-gray-900 mb-1">Avaliar Motoboy</h3>
+      <p id="hist-avaliar-nome" class="text-sm text-gray-500 mb-4"></p>
+      <div class="flex justify-center gap-2 mb-4" id="hist-estrelas"></div>
+      <textarea id="hist-comentario" rows="3" placeholder="Conte como foi a experiência..." class="w-full border border-gray-200 rounded-xl p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-marca-500 mb-4"></textarea>
+      <div class="flex gap-2">
+        <button onclick="historico_de_entregas_cancelarAvaliacao()" class="flex-1 py-3 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 active:scale-95 transition-all">Cancelar</button>
+        <button onclick="historico_de_entregas_enviarAvaliacao()" class="flex-1 py-3 rounded-xl bg-marca-600 text-white text-sm font-medium hover:bg-marca-700 active:scale-95 transition-all">Enviar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    var periodo='hoje',statusFiltro='todas',avaliandoId=null,avaliandoEstrelas=0;
+    var motoboys=[
+      {nome:'Carlos Silva',avaliacao:4.8,cor:'bg-blue-500'},
+      {nome:'Pedro Henrique',avaliacao:4.5,cor:'bg-emerald-500'},
+      {nome:'Lucas Oliveira',avaliacao:4.9,cor:'bg-amber-500'},
+      {nome:'João Santos',avaliacao:4.3,cor:'bg-rose-500'},
+      {nome:'Rafael Costa',avaliacao:4.7,cor:'bg-violet-500'},
+      {nome:'André Souza',avaliacao:4.6,cor:'bg-teal-500'},
+      {nome:'Bruno Lima',avaliacao:4.4,cor:'bg-indigo-500'},
+      {nome:'Diego Almeida',avaliacao:4.1,cor:'bg-orange-500'},
+      {nome:'Thiago Ribeiro',avaliacao:4.8,cor:'bg-cyan-500'},
+      {nome:'Felipe Martins',avaliacao:3.9,cor:'bg-pink-500'}
+    ];
+    var statusMap={entregue:{label:'Entregue',cls:'bg-emerald-100 text-emerald-700'},cancelada:{label:'Cancelada',cls:'bg-red-100 text-red-700'},em_transito:{label:'Em trânsito',cls:'bg-blue-100 text-blue-700'},agendada:{label:'Agendada',cls:'bg-amber-100 text-amber-700'}};
+    var entregas=[
+      {id:1001,data:'2025-01-15',periodo:'Hoje',origem:'Rua Augusta, 520 - Consolação',destino:'Av. Paulista, 1578 - Bela Vista',valor:18.50,taxa:2.00,motoboy:motoboys[0],status:'entregue',pagamento:'Cartão de Crédito',avaliado:false},
+      {id:1002,data:'2025-01-15',periodo:'Hoje',origem:'Alameda Santos, 890 - Jardins',destino:'Rua Oscar Freire, 230 - Jardins',valor:12.00,taxa:2.00,motoboy:motoboys[1],status:'entregue',pagamento:'Pix',avaliado:false},
+      {id:1003,data:'2025-01-14',periodo:'Ontem',origem:'Av. Rebouças, 3150 - Pinheiros',destino:'Rua Fradique Coutinho, 120 - Pinheiros',valor:22.00,taxa:2.00,motoboy:motoboys[2],status:'entregue',pagamento:'Cartão de Débito',avaliado:true},
+      {id:1004,data:'2025-01-14',periodo:'Ontem',origem:'Rua Haddock Lobo, 450 - Cerqueira César',destino:'Av. Brigadeiro Faria Lima, 2232 - Jardim Paulistano',valor:28.00,taxa:2.00,motoboy:motoboys[3],status:'cancelada',pagamento:'-',avaliado:false,motivo:'Cliente cancelou após 15 min de espera'},
+      {id:1005,data:'2025-01-13',periodo:'Essa semana',origem:'Rua da Consolação, 2300 - Consolação',destino:'Rua Maria Antônia, 85 - Vila Buarque',valor:9.00,taxa:1.00,motoboy:motoboys[4],status:'entregue',pagamento:'Dinheiro',avaliado:true},
+      {id:1006,data:'2025-01-13',periodo:'Essa semana',origem:'Av. São João, 440 - Centro',destino:'Rua 25 de Março, 700 - Centro',valor:15.00,taxa:2.00,motoboy:motoboys[5],status:'entregue',pagamento:'Cartão de Crédito',avaliado:false},
+      {id:1007,data:'2025-01-12',periodo:'Essa semana',origem:'Rua Vergueiro, 1500 - Liberdade',destino:'Rua Galvão Bueno, 320 - Liberdade',valor:13.00,taxa:1.00,motoboy:motoboys[6],status:'entregue',pagamento:'Pix',avaliado:false},
+      {id:1008,data:'2025-01-11',periodo:'Essa semana',origem:'Av. Ibirapuera, 3100 - Moema',destino:'Rua Olimpiadas, 520 - Vila Olímpia',valor:25.00,taxa:2.00,motoboy:motoboys[7],status:'entregue',pagamento:'Cartão de Crédito',avaliado:true},
+      {id:1009,data:'2025-01-10',periodo:'Essa semana',origem:'Rua dos Pinheiros, 890 - Pinheiros',destino:'Rua dos Padres, 45 - Pinheiros',valor:11.00,taxa:1.00,motoboy:motoboys[8],status:'cancelada',pagamento:'-',avaliado:false,motivo:'Motoboy não aceitou a rota — valor abaixo da taxa mínima'},
+      {id:1010,data:'2025-01-09',periodo:'Esse mês',origem:'Av. Moema, 400 - Moema',destino:'Rua Normandia, 120 - Moema',valor:16.00,taxa:2.00,motoboy:motoboys[9],status:'entregue',pagamento:'Dinheiro',avaliado:false},
+      {id:1011,data:'2025-01-08',periodo:'Esse mês',origem:'Rua Itapeva, 650 - Bela Vista',destino:'Rua Bela Cintra, 210 - Consolação',valor:20.00,taxa:2.00,motoboy:motoboys[0],status:'entregue',pagamento:'Cartão de Crédito',avaliado:false},
+      {id:1012,data:'2025-01-07',periodo:'Esse mês',origem:'Av. Angélica, 2200 - Santa Cecília',destino:'Rua Cásper Líbero, 80 - Centro',valor:14.00,taxa:1.00,motoboy:motoboys[1],status:'entregue',pagamento:'Pix',avaliado:true},
+      {id:1013,data:'2025-01-06',periodo:'Esse mês',origem:'Rua Bento Branco, 150 - Jardins',destino:'Alameda Lorena, 400 - Jardins',valor:35.00,taxa:2.00,motoboy:motoboys[2],status:'entregue',pagamento:'Cartão de Crédito',avaliado:false},
+      {id:1014,data:'2025-01-05',periodo:'Esse mês',origem:'Rua Treze de Maio, 950 - Bela Vista',destino:'Rua Martinho Prado, 120 - Centro',valor:10.00,taxa:1.00,motoboy:motoboys[3],status:'entregue',pagamento:'Dinheiro',avaliado:false}
+    ];
+    var graficoDados=[
+      {dia:'Seg',valor:42},{dia:'Ter',valor:67},{dia:'Qua',valor:23},{dia:'Qui',valor:89},{dia:'Sex',valor:55},{dia:'Sáb',valor:120},{dia:'Dom',valor:34}
+    ];
+
+    function getStars(n){
+      var s='',i;for(i=1;i<=5;i++){s+='<svg class="w-5 h-5 '+(i<=n?'text-amber-400':'text-gray-200')+'" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>';}
+      return s;
+    }
+    function shorten(s,l){return s.length>l?s.substring(0,l)+'…':s;}
+    function initials(n){var p=n.split(' ');return(p[0][0]+(p[1]?p[1][0]:'')).toUpperCase();}
+    function getIniciais(m){return initials(m.nome);}
+
+    function renderGrafico(){
+      var max=Math.max.apply(null,graficoDados.map(function(d){return d.valor;})),svg=document.getElementById('hist-grafico'),out='',gW=700,gH=130,mT=10,gB=25,gL=40,i;
+      for(i=0;i<graficoDados.length;i++){
+        var barW=40,gap=(gW-gL-(graficoDados.length*barW))/(graficoDados.length+1),x=gL+gap*(i+1)+barW*i,h=max>0?(graficoDados[i].valor/max)*gH:0,y=gH-h+5;
+        out+='<rect class="hist-bar-fill" x="'+x+'" y="'+y+'" width="'+barW+'" height="'+h+'" rx="6" fill="#059669" opacity="0.85"/>';
+        out+='<text x="'+(x+barW/2)+'" y="'+(gH+18)+'" text-anchor="middle" fill="#9CA3AF" font-size="11" font-family="sans-serif">'+graficoDados[i].dia+'</text>';
+        if(graficoDados[i].valor>=50)out+='<text x="'+(x+barW/2)+'" y="'+(y-6)+'" text-anchor="middle" fill="#6B7280" font-size="9" font-family="sans-serif">R
+  </main>
+
+  <!-- Rodapé -->
+  <footer class="bg-gray-900 text-gray-300 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 py-12">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <!-- Institucional -->
+        <div>
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-10 h-10 bg-gradient-to-br from-marca-500 to-marca-700 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+            </div>
+            <span class="font-display font-bold text-xl text-white">RapidE</span>
+          </div>
+          <p class="text-sm text-gray-400 mb-4">Conectando estabelecimentos a entregadores de forma rápida, segura e eficiente.</p>
+          <div class="flex gap-3">
+            <a href="#" class="w-9 h-9 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-marca-600 transition-colors">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-+Math.round(graficoDados[i].valor)+'</text>';
+      }
+      out+='<line x1="'+gL+'" y1="'+(gH+5)+'" x2="'+(gW-10)+'" y2="'+(gH+5)+'" stroke="#E5E7EB" stroke-width="1"/>';
+      svg.innerHTML=out;
+      setTimeout(function(){var bars=document.querySelectorAll('#hist-grafico .hist-bar-fill');bars.forEach(function(b){var h=parseFloat(b.getAttribute('height')),y=parseFloat(b.getAttribute('y')),fy=gH-h+5;b.setAttribute('y',y+8);b.style.transform='translateY(8px)';b.getBoundingClientRect();b.style.transition='all .6s cubic-bezier(.4,0,.2,1)';b.setAttribute('y',fy);b.style.transform='translateY(0)';})},50);
+    }
+
+    function renderLista(){
+      var lista=document.getElementById('hist-lista'),vazia=document.getElementById('hist-lista-vazia'),cont=document.getElementById('hist-contador'),filtrados=entregas.filter(function(e){
+        if(statusFiltro==='entregues'&&e.status!=='entregue')return false;
+        if(statusFiltro==='canceladas'&&e.status!=='cancelada')return false;
+        if(periodo==='hoje'&&e.periodo!=='Hoje')return false;
+        if(periodo==='semana'&&(e.periodo==='Esse mês'))return false;
+        return true;
+      });
+      cont.textContent=filtrados.length;
+      if(!filtrados.length){lista.innerHTML='';vazia.classList.remove('hidden');return;}
+      vazia.classList.add('hidden');
+      lista.innerHTML=filtrados.map(function(e){
+        var st=statusMap[e.status];
+        var detalheHtml='<div class="space-y-3">'+
+          '<div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-full '+e.motoboy.cor+' text-white flex items-center justify-center font-bold text-sm">'+getIniciais(e.motoboy)+'</div><div><p class="font-medium text-sm text-gray-900">'+e.motoboy.nome+'</p><p class="text-xs text-amber-600 font-medium">★ '+e.motoboy.avaliacao+'</p></div></div>'+
+          '<div class="bg-gray-50 rounded-xl p-3 space-y-2"><p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Origem</p><p class="text-sm text-gray-800">'+e.origem+'</p><p class="text-xs text-gray-400">'+(e.data)+'</p><div class="border-t border-gray-200 my-2"></div><p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Destino</p><p class="text-sm text-gray-800">'+e.destino+'</p></div>'+
+          '<div class="grid grid-cols-2 gap-3"><div class="bg-marca-50 rounded-xl p-3 text-center"><p class="text-xs text-marca-600 font-medium">Valor da Corrida</p><p class="font-display font-bold text-marca-700">'+brl(e.valor)+'</p></div><div class="bg-gray-50 rounded-xl p-3 text-center"><p class="text-xs text-gray-500 font-medium">Taxa</p><p class="font-display font-bold text-gray-700">'+brl(e.taxa)+'</p></div></div>'+
+          '<div class="flex justify-between text-sm"><span class="text-gray-500">Pagamento:</span><span class="font-medium text-gray-800">'+e.pagamento+'</span></div>';
+        if(e.status==='cancelada')detalheHtml+='<div class="bg-red-50 border border-red-100 rounded-xl p-3"><p class="text-xs text-red-600 font-medium">Motivo do cancelamento</p><p class="text-sm text-red-700 mt-1">'+e.motivo+'</p></div>';
+        if(e.status==='entregue'&&!e.avaliado)detalheHtml+='<button onclick="historico_de_entregas_abrirAvaliacao('+e.id+')" class="w-full py-2.5 rounded-xl border-2 border-marca-200 text-marca-600 text-sm font-medium hover:bg-marca-50 active:scale-95 transition-all">Avaliar Motoboy</button>';
+        if(e.status==='entregue'&&e.avaliado)detalheHtml+='<div class="flex items-center justify-center gap-2 py-2 text-sm text-gray-500"><svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Avaliado</div>';
+        detalheHtml+='</div>';
+        var btnAcoes='<button onclick="historico_de_entregas_verDetalhe('+e.id+')" class="flex-1 py-2.5 px-4 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 active:scale-95 transition-all min-h-[44px]">Ver Detalhes</button>';
+        if(e.status==='entregue'&&!e.avaliado)btnAcoes+='<button onclick="event.stopPropagation();historico_de_entregas_abrirAvaliacao('+e.id+')" class="flex-1 py-2.5 px-4 rounded-xl bg-marca-600 text-white text-sm font-medium hover:bg-marca-700 active:scale-95 transition-all min-h-[44px]">Avaliar Motoboy</button>';
+        return'<div class="hist-card card p-4 cursor-pointer" onclick="historico_de_entregas_verDetalhe('+e.id+')">'+
+          '<div class="flex flex-col sm:flex-row sm:items-center gap-3">'+
+            '<div class="flex items-center gap-3 flex-1 min-w-0">'+
+              '<div class="w-10 h-10 rounded-full '+e.motoboy.cor+' text-white flex items-center justify-center font-bold text-sm flex-shrink-0">'+getIniciais(e.motoboy)+'</div>'+
+              '<div class="min-w-0 flex-1">'+
+                '<div class="flex items-center gap-2 flex-wrap">'+
+                  '<span class="font-semibold text-sm text-gray-900">#'+e.id+'</span>'+
+                  '<span class="badge '+st.cls+' text-xs">'+st.label+'</span>'+
+                '</div>'+
+                '<p class="text-xs text-gray-400 mt-0.5">'+dataBR(e.data)+'</p>'+
+              '</div>'+
+            '</div>'+
+            '<div class="flex-1 min-w-0 sm:pl-4 sm:border-l border-gray-100">'+
+              '<p class="text-xs text-gray-500 truncate">'+shorten(e.origem,30)+' → '+shorten(e.destino,30)+'</p>'+
+              '<p class="text-xs text-gray-400 mt-0.5">'+e.motoboy.nome+'</p>'+
+            '</div>'+
+            '<div class="flex sm:flex-col items-center sm:items-end justify-between sm:gap-1 sm:min-w-[100px] sm:text-right">'+
+              '<div><p class="font-display font-bold text-sm text-gray-900">'+brl(e.valor)+'</p><p class="text-xs text-gray-400">+ taxa '+brl(e.taxa)+'</p></div>'+
+            '</div>'+
+          '</div>'+
+          '<div class="flex gap-2 mt-3 pt-3 border-t border-gray-100">'+btnAcoes+'</div>'+
+        '</div>';
+      }).join('');
+    }
+
+    window.historico_de_entregas_setPeriodo=function(p){
+      periodo=p;['hoje','semana','mes'].forEach(function(x){
+        var b=document.getElementById('filt-periodo-'+x);if(x===p){b.className='hist-filter-pill px-4 py-2 rounded-lg text-sm font-medium bg-marca-600 text-white';}else{b.className='hist-filter-pill px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200';}
+      });historico_de_entregas_atualizarResumo();renderLista();
+    };
+    window.historico_de_entregas_setStatus=function(s){
+      statusFiltro=s;['todas','entregues','canceladas'].forEach(function(x){
+        var b=document.getElementById('filt-status-'+x);if(x===s){b.className='hist-filter-pill px-4 py-2 rounded-lg text-sm font-medium bg-marca-600 text-white';}else{b.className='hist-filter-pill px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200';}
+      });renderLista();
+    };
+    window.historico_de_entregas_atualizarResumo=function(){
+      var f=entregas.filter(function(e){
+        if(statusFiltro==='entregues'&&e.status!=='entregue')return false;if(statusFiltro==='canceladas'&&e.status!=='cancelada')return false;if(periodo==='hoje'&&e.periodo!=='Hoje')return false;if(periodo==='semana'&&(e.periodo==='Esse mês'))return false;return true;
+      });
+      var tGasto=f.reduce(function(s,e){return s+e.valor;},0),tTaxas=f.reduce(function(s,e){return s+e.taxas=e.taxa;},0),nCorridas=f.length,media=nCorridas?tGasto/nCorridas:0;
+      document.getElementById('hist-total-gasto').textContent=brl(tGasto);document.getElementById('hist-corridas').textContent=nCorridas;document.getElementById('hist-media').textContent=brl(media);document.getElementById('hist-taxas').textContent=brl(tTaxas);
+    };
+    window.historico_de_entregas_verDetalhe=function(id){
+      var e=entregas.find(function(x){return x.id===id;});if(!e)return;
+      var st=statusMap[e.status];var html='<div class="space-y-4">'+
+        '<div class="flex items-center justify-between"><span class="badge '+st.cls+' text-xs">'+st.label+'</span><span class="text-sm text-gray-500">#'+e.id+'</span></div>'+
+        '<div class="bg-gray-50 rounded-xl p-4 space-y-3">'+
+          '<div><p class="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Origem</p><p class="text-sm text-gray-800 font-medium">'+e.origem+'</p></div>'+
+          '<div class="flex items-center gap-2 text-marca-500"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div>'+
+          '<div><p class="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Destino</p><p class="text-sm text-gray-800 font-medium">'+e.destino+'</p></div>'+
+        '</div>'+
+        '<div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl"><div class="w-10 h-10 rounded-full '+e.motoboy.cor+' text-white flex items-center justify-center font-bold text-sm">'+getIniciais(e.motoboy)+'</div><div class="flex-1"><p class="font-medium text-sm text-gray-900">'+e.motoboy.nome+'</p><p class="text-xs text-amber-600">★ '+e.motoboy.avaliacao+' de avaliação</p></div></div>'+
+        '<div class="grid grid-cols-2 gap-3"><div class="bg-marca-50 rounded-xl p-3 text-center"><p class="text-xs text-marca-600">Valor</p><p class="font-display font-bold text-marca-700">'+brl(e.valor)+'</p></div><div class="bg-gray-50 rounded-xl p-3 text-center"><p class="text-xs text-gray-500">Taxa</p><p class="font-display font-bold">'+brl(e.taxa)+'</p></div></div>'+
+        '<div class="space-y-2 text-sm">'+
+          '<div class="flex justify-between"><span class="text-gray-500">Data</span><span class="font-medium">'+dataBR(e.data)+'</span></div>'+
+          '<div class="flex justify-between"><span class="text-gray-500">Pagamento</span><span class="font-medium">'+e.pagamento+'</span></div>'+
+          '<div class="flex justify-between"><span class="text-gray-500">Total pago</span><span class="font-bold text-gray-900">'+brl(e.valor+e.taxa)+'</span></div>'+
+        '</div>'+
+        (e.status==='cancelada'?'<div class="bg-red-50 border border-red-100 rounded-xl p-3"><p class="text-xs text-red-600 font-medium">Motivo do cancelamento</p><p class="text-sm text-red-700 mt-1">'+e.motivo+'</p></div>':'')+
+        (e.status==='entregue'&&!e.avaliado?'<button onclick="fecharModal();historico_de_entregas_abrirAvaliacao('+e.id+')" class="w-full py-3 rounded-xl bg-marca-600 text-white font-medium hover:bg-marca-700 active:scale-95 transition-all">Avaliar Motoboy</button>':'')+
+        (e.status==='entregue'&&e.avaliado?'<div class="flex items-center justify-center gap-2 text-sm text-emerald-600 bg-emerald-50 rounded-xl py-3"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Avaliação enviada</div>':'')+
+      '</div>';
+      abrirModal(html,'Detalhes da Corrida #'+e.id);
+    };
+    window.historico_de_entregas_abrirAvaliacao=function(id){
+      var e=entregas.find(function(x){return x.id===id;});if(!e)return;
+      avaliandoId=id;avaliandoEstrelas=0;
+      document.getElementById('hist-avaliar-nome').textContent='Avalie a entrega de '+e.motoboy.nome;
+      document.getElementById('hist-comentario').value='';
+      var el=document.getElementById('hist-estrelas');el.innerHTML='';
+      for(var i=1;i<=5;i++){var s=document.createElement('span');s.className='hist-star';s.innerHTML=getStars(0).replace(/text-amber-400/g,'text-gray-200').replace('9.05','10.95');s.onclick=(function(star){return function(){avaliandoEstrelas=star;window.historico_de_entregas_updateStars(star);};})(i);el.appendChild(s);}
+      document.getElementById('hist-modal-avaliacao').classList.remove('hidden');
+    };
+    window.historico_de_entregas_updateStars=function(n){
+      var el=document.getElementById('hist-estrelas');var out='';
+      for(var i=1;i<=5;i++){out+='<svg class="w-6 h-6 hist-star '+(i<=n?'text-amber-400':'text-gray-200')+'" onclick="historico_de_entregas_updateStars('+i+')" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>';}
+      el.innerHTML=out;
+    };
+    window.historico_de_entregas_fecharAvaliacao=function(){document.getElementById('hist-modal-avaliacao').classList.add('hidden');avaliandoId=null;};
+    window.historico_de_entregas_cancelarAvaliacao=function(){historico_de_entregas_fecharAvaliacao();};
+    window.historico_de_entregas_enviarAvaliacao=function(){
+      if(!avaliandoEstrelas){toast('Selecione ao menos 1 estrela','erro');return;}
+      var e=entregas.find(function(x){return x.id===avaliandoId;});if(e){e.avaliado=true;}
+      historico_de_entregas_fecharAvaliacao();historico_de_entregas_atualizarResumo();renderLista();toast('Avaliação enviada com sucesso!','ok');
+    };
+
+    renderGrafico();renderLista();
+  })();
+  </script>
+</section>
+
     <!-- TELAS -->
   </main>
 
