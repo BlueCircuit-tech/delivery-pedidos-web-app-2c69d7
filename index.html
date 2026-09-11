@@ -1907,6 +1907,192 @@
       </div>
     </section>
 
+    <section data-tela="pedido-confirmado" class="hidden">
+      <div class="max-w-3xl mx-auto px-4 py-6 sm:py-10 space-y-6">
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mb-4 animate-bounce">
+            <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <h2 class="font-display text-2xl sm:text-3xl font-bold text-gray-900">Pedido Confirmado!</h2>
+          <p class="text-gray-500 mt-1">Corrida <span class="font-bold text-marca-700">#4821</span> &middot; <span id="pedido_confirmado_hora"></span></p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
+          <div class="p-5 sm:p-6 space-y-5">
+            <div class="flex items-start gap-4">
+              <div class="flex flex-col items-center">
+                <div class="w-10 h-10 rounded-full bg-marca-100 flex items-center justify-center">
+                  <svg class="w-5 h-5 text-marca-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243A8 8 0 1117.657 16.657z"/><circle cx="12" cy="11" r="1.5" fill="currentColor"/></svg>
+                </div>
+                <div class="w-0.5 h-8 bg-gray-200 my-1"></div>
+                <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                  <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                </div>
+              </div>
+              <div class="flex-1 space-y-3">
+                <div>
+                  <p class="text-xs text-gray-400 font-medium uppercase tracking-wide">Retirada</p>
+                  <p class="text-sm font-semibold text-gray-800">Padaria Central &middot; Rua das Flores, 123</p>
+                  <p class="text-xs text-gray-500">Centro &middot; São Paulo - SP</p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-400 font-medium uppercase tracking-wide">Entrega</p>
+                  <p class="text-sm font-semibold text-gray-800">Condomínio Jardins &middot; Av. Paulista, 1500, Apto 42</p>
+                  <p class="text-xs text-gray-500">Jardins &middot; São Paulo - SP</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div class="bg-gray-50 rounded-xl p-3 text-center">
+                <p class="text-xs text-gray-400">Distância</p>
+                <p class="font-display font-bold text-gray-800">4,2 km</p>
+              </div>
+              <div class="bg-gray-50 rounded-xl p-3 text-center">
+                <p class="text-xs text-gray-400">Tempo estimado</p>
+                <p class="font-display font-bold text-gray-800">15-20 min</p>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between bg-green-50 rounded-xl p-4 border border-green-200">
+              <div>
+                <p class="text-xs text-green-600 font-medium">Taxa da corrida</p>
+                <p class="font-display text-2xl font-bold text-green-700">R$ 12,50</p>
+              </div>
+              <div class="w-12 h-12 rounded-full bg-green-200 flex items-center justify-center">
+                <svg class="w-6 h-6 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-amber-50 border-t border-amber-200 px-5 sm:px-6 py-4 flex items-center gap-3">
+            <div class="relative flex-shrink-0">
+              <span class="absolute inline-flex h-3 w-3 rounded-full bg-amber-400 opacity-75 animate-ping"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+            </div>
+            <p class="text-sm text-amber-800 font-medium">Procurando motoboy na região... Tempo estimado: <strong>até 3 minutos</strong></p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-5 sm:p-6">
+          <h3 class="font-display text-lg font-bold text-gray-800 mb-5">Status da Corrida</h3>
+          <div class="relative" id="pedido_confirmado_timeline">
+            <div class="absolute left-5 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+            <div class="space-y-6">
+              <div class="flex items-start gap-4" data-step="1">
+                <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 z-10">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <div class="pt-2">
+                  <p class="font-semibold text-green-700">Solicitada</p>
+                  <p class="text-xs text-gray-500">Corrida criada com sucesso &middot; 14:32</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4" data-step="2">
+                <div class="w-10 h-10 rounded-full bg-amber-400 flex items-center justify-center flex-shrink-0 z-10 animate-pulse">
+                  <svg class="w-5 h-5 text-white animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                </div>
+                <div class="pt-2">
+                  <p class="font-semibold text-amber-700">Aguardando aceite</p>
+                  <p class="text-xs text-gray-500">Procurando motoboy disponível...</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4 opacity-40" data-step="3">
+                <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0 z-10">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <div class="pt-2">
+                  <p class="font-semibold text-gray-600">Em rota</p>
+                  <p class="text-xs text-gray-400">Aguardando motoboy aceitar</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4 opacity-40" data-step="4">
+                <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0 z-10">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                </div>
+                <div class="pt-2">
+                  <p class="font-semibold text-gray-600">Entregue</p>
+                  <p class="text-xs text-gray-400">Aguardando conclusão</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-3 pb-24 lg:pb-6">
+          <button onclick="mostrarTela('acompanhar-entrega')" class="btn btn-primary w-full py-3.5 text-base font-semibold rounded-xl active:scale-[0.97] transition-transform flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m0 0l6 3m-6-3V7m6 10l-5.447-2.724A1 1 0 0115 13.382V2.618a1 1 0 011.447-.894L21 4m0 13V7"/></svg>
+            Acompanhar Corrida
+          </button>
+          <button onclick="mostrarTela('solicitar-corrida')" class="btn btn-secondary w-full py-3.5 text-base font-semibold rounded-xl active:scale-[0.97] transition-transform">
+            + Nova Corrida
+          </button>
+          <button onclick="mostrarTela('painel-do-lojista')" class="btn w-full py-3.5 text-base font-semibold rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 active:scale-[0.97] transition-transform">
+            Painel Admin
+          </button>
+        </div>
+      </div>
+
+      <button onclick="mostrarTela('acompanhar-entrega')" class="fixed bottom-6 left-4 right-4 lg:hidden z-50 bg-marca-700 text-white font-semibold py-4 rounded-2xl shadow-lg flex items-center justify-center gap-2 active:scale-[0.97] transition-transform">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243A8 8 0 1117.657 16.657z"/><circle cx="12" cy="11" r="1.5" fill="currentColor"/></svg>
+        Ver Mapa
+      </button>
+
+      <script>
+        function pedido_confirmado_init() {
+          const el = document.getElementById('pedido_confirmado_hora');
+          if (el) {
+            const d = new Date();
+            el.textContent = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+          }
+          pedido_confirmado_simularAtualizacao();
+        }
+
+        function pedido_confirmado_simularAtualizacao() {
+          const statusMap = [
+            { step: 2, label: 'Aguardando aceite', sub: 'Procurando motoboy disponível...', color: 'bg-amber-400 text-amber-700', iconColor: 'text-amber-600' },
+            { step: 3, label: 'Em rota', sub: 'Motoboy a caminho do local de retirada', color: 'bg-blue-500 text-blue-700', iconColor: 'text-blue-600' },
+            { step: 4, label: 'Entregue', sub: 'Entrega concluída com sucesso', color: 'bg-green-500 text-green-700', iconColor: 'text-green-600' }
+          ];
+          let index = 0;
+          const interval = setInterval(() => {
+            if (index >= statusMap.length) { clearInterval(interval); return; }
+            const s = statusMap[index];
+            const timeline = document.getElementById('pedido_confirmado_timeline');
+            if (!timeline) { clearInterval(interval); return; }
+            const steps = timeline.querySelectorAll('[data-step]');
+            steps.forEach((el, i) => {
+              const sn = parseInt(el.dataset.step);
+              if (sn <= s.step) {
+                el.classList.remove('opacity-40');
+                const circle = el.querySelector('div');
+                if (sn === s.step) {
+                  circle.className = 'w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 z-10 ' + s.color;
+                } else if (sn < s.step) {
+                  circle.className = 'w-10 h-10 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 z-10';
+                  circle.innerHTML = '<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+                }
+                const label = el.querySelector('p.font-semibold');
+                if (sn === s.step && label) label.className = 'font-semibold ' + s.color.replace('bg-', 'text-');
+                const sub = el.querySelector('p.text-xs');
+                if (sn === s.step && sub) { sub.textContent = s.sub; sub.className = 'text-xs text-gray-500'; }
+              }
+            });
+            toast('Status atualizado: ' + s.label, 'info');
+            index++;
+          }, 8000);
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', pedido_confirmado_init);
+        } else {
+          pedido_confirmado_init();
+        }
+      </script>
+    </section>
+
     <!-- TELAS -->
   </main>
 
